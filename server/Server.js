@@ -10,7 +10,7 @@ const Folder = require("./Models/DocumentFolder");
 const express = require("express");
 const cors = require("cors");
 const io = require("socket.io")(process.env.SOCKETPORT || 5000, {
-  cors: { origin: "*", methods: ["GET", "POST"], connectSources: ["'self'", "wss://localhost:5000"] },
+  cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
 //routes
@@ -26,13 +26,14 @@ mongoose.connect(
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false
   },
   () => console.log("Connected to Database: " + process.env.DATABASE_URL)
 );
 
 (async () => {
   let folder = await Folder.find({ path: "/" })
-  if(folder.length < 1) {
+  if (folder.length < 1) {
     Folder.create({
       _id: v4(),
       data: [],

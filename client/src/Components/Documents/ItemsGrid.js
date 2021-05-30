@@ -1,6 +1,5 @@
 import React from "react";
 import DocumentCard from "./DocumentCard";
-import FolderCard from "./FolderCard";
 
 export default function ItemsGrid({
   folders,
@@ -15,31 +14,33 @@ export default function ItemsGrid({
       {loading
         ? "Laden ..."
         : folders.map((folder) => (
-            <FolderCard
-              owner={folder.owner}
-              title={folder.name}
-              key={folder._id}
-              createdAt={folder.createDate}
-              id={folder._id}
-              currPath={FolderPath}
-              setFolder={setFolders}
-              setLoading={setLoading}
-            />
-          ))}
+          <DocumentCard
+            type="folder"
+            owner={folder.owner}
+            title={folder.name}
+            key={folder._id}
+            createdAt={folder.createDate}
+            id={folder._id}
+            currPath={FolderPath}
+            setFolder={setFolders}
+            setLoading={setLoading}
+          />
+        ))}
       {loading
         ? ""
         : documents.map((document) => (
-            <DocumentCard
-              key={document._id}
-              title={document.name}
-              id={document._id}
-              changedAt={document.changedDate}
-              createdAt={document.createDate}
-              roles={document.roles}
-              owner={document.owner}
-              currPath={FolderPath}
-            />
-          ))}
+          <DocumentCard
+            type="document"
+            key={document._id}
+            title={document.name}
+            id={document._id}
+            changedAt={document.changedDate}
+            createdAt={document.createDate}
+            roles={document.roles}
+            owner={document.owner}
+            currPath={FolderPath}
+          />
+        ))}
     </div>
   );
 }

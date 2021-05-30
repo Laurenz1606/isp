@@ -39,10 +39,12 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
     roles = roles.map((role) => role.role);
     const body = { name: e.target[0].value, roles };
     const res = await fetcher(genererateFetchurl(type), "POST", body);
-    console.log(res)
+    console.log(res);
     setIsOpen(false);
-    if (type === "document") history.push("/documents/" + res.document._id + "?path=" + FolderPath);
-    if (type === "folder") history.push("/documents?path=" + FolderPath + res.folder._id + "/");
+    if (type === "document")
+      history.push("/documents/" + res.document._id + "?path=" + FolderPath);
+    if (type === "folder")
+      history.push("/documents?path=" + FolderPath + res.folder._id + "/");
   };
 
   return (

@@ -1,8 +1,9 @@
-import { DocumentAddIcon, FolderAddIcon } from "@heroicons/react/outline";
+import { DocumentAddIcon, FolderAddIcon, TrashIcon } from "@heroicons/react/outline";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import DocumentHeaderButton from "../Components/Documents/DocumentHeaderButton";
 import Modal from "../Components/Documents/DocumentModal";
+import DeleteFolderModal from "../Components/Documents/DeleteFolderModal";
 import { fetcher } from "../Functions/AuthFunctions";
 import { useQuery } from "../Functions/ReactRouterDomHooks";
 import ItemsGrid from "../Components/Documents/ItemsGrid";
@@ -20,6 +21,7 @@ export default function Documents() {
   const [loading, setLoading] = useState(true);
   const [DocumentModalIsOpen, setDocumentModalOpen] = useState(false);
   const [FolderModalIsOpen, setFolderModalOpen] = useState(false);
+  const [FolderDeleteIsOpen, setFolderDeleteIsOpen] = useState(false);
 
   function joinPaths(pathArray) {
     let newPathArray = [];
@@ -36,6 +38,7 @@ export default function Documents() {
       if (FolderPath.startsWith("/")) {
         (async () => {
           let res = await fetcher("/documents/get?path=" + FolderPath, "GET");
+          console.log(res)
           setDocuments(
             res.documents.sort((a, b) => b.changedDate - a.changedDate)
           );
@@ -72,6 +75,14 @@ export default function Documents() {
             icon={<FolderAddIcon className="w-8 h-8" />}
             text="Neuer Ordner"
           />
+          {FolderPath === "/" ? "" :
+            <DocumentHeaderButton
+              type="delete"
+              action={() => setFolderDeleteIsOpen((prev) => !prev)}
+              icon={<TrashIcon className="w-8 h-8" />}
+              text="Ordner Löschen"
+            />
+          }
         </div>
         <Path paths={fetchedPaths} fullpaths={fullPaths} />
         <ItemsGrid
@@ -95,6 +106,10 @@ export default function Documents() {
         setIsOpen={setFolderModalOpen}
         type="folder"
         FolderPath={FolderPath}
+      />
+      <DeleteFolderModal
+        isOpen={FolderDeleteIsOpen}
+        setIsOpen={setFolderDeleteIsOpen}
       />
     </>
   );

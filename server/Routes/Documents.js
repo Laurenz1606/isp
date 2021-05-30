@@ -105,6 +105,60 @@ Route.post("/addFolder", authenticateToken, async (req, res) => {
   res.json({ code: 0, document: await doc.save() });
 });
 
+Route.post("/deleteFolder", async (req, res) => {
+  if(req.body.folder === undefined || req.body.folder ===  null || req.body.folder ===  "/") return res.json({})
+  const start = {documentID: req.body.folder}
+
+  removeFoldersAndFilesRecursive([start])
+  const FolderGet = Folder.findById(req.body.folder)
+  let path = FolderGet.path.split("/")
+  const ParentFodler = await Folder.findById(path[path.length - 2])
+  testForChild(req.body.folder, ParentFodler)
+
+  async function removeFoldersAndFilesRecursive(childrens) {
+    childrens.forEach(async (children) => {
+      const folder = await Folder.findById(children.documentID)
+      // await Folder.findById()
+      if(children.documentID === req.body.folder) await Folder.deleteOne({_id: children.documentID})
+      pushIDsIntoArray(folder.data)
+      if(checkIfFolderHasSubFolders(folder.data)) {
+        removeFoldersAndFilesRecursive(folder.data.filter(element => element.type === "folder"))
+      }
+      else {
+        return
+      }
+    })
+  }
+
+  function testForChild(childId, parent) {
+    let newdata = []
+    parent.data.forEach(dataelement => {
+      if(dataelement.type === "folder" && dataelement.documentID === childId) {
+      } else {
+        newdata.push(dataelement)
+      }
+    })
+    parent.data = newdata
+    parent.save()
+  }
+
+  function pushIDsIntoArray(data) {
+    data.forEach(element => {
+      if(element.type === "folder") Folder.deleteOne({_id: element.documentID})
+      if(element.type === "document") Document.deleteOne({_id: element.documentID})
+    })
+  }
+
+  function checkIfFolderHasSubFolders(data) {
+    let check = false
+    data.forEach((dataelement) => {
+      if(dataelement.type === "folder") check = true
+    })
+    return check
+  }
+})
+
+
 //authToken function
 function authenticateToken(req, res, next) {
   //get the token from the header
