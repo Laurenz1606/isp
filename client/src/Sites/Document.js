@@ -22,8 +22,9 @@ const TOOLBARS_OPTIONS = [
 
 export default function Document() {
   const { id: paramid } = useParams();
-  const backPath = useQuery().get("path")
+  const backPath = useQuery().get("path");
   const [quill, setQuill] = useState();
+  const [name, setName] = useState(null);
   const [socket, setSocket] = useState();
   const history = useHistory();
 
@@ -58,6 +59,7 @@ export default function Document() {
       if (document.err) {
         history.push("/documents");
       }
+      setName(document.name);
       quill.setContents(document.data);
       quill.enable();
     });
@@ -95,12 +97,13 @@ export default function Document() {
 
   return (
     <div className="flex-col flex-1" style={{ maxWidth: "100vw" }}>
-      <div className="p-5">
+      <div className=" flex items-center space-x-5 flex-wrap justify-center md:justify-start p-5">
         <DocumentHeaderButton
           action={() => history.push("/documents?path=" + backPath)}
           icon={<ChevronLeftIcon className="w-8 h-8" />}
           text="Zurück"
         />
+        <h1 className="text-xl font-medium">{name !== null ? name : "Loading..."}</h1>
       </div>
       <div className="container-text" ref={wrapperRef}></div>
     </div>

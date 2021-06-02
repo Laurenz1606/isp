@@ -2,12 +2,13 @@ const Document = require("../Models/Document");
 
 module.exports = (socket, io) => {
   socket.on("document/get", async (documentID) => {
-    const [err, data] = await getDocument(documentID);
+    const [err, data, documentName] = await getDocument(documentID);
     socket.join(documentID);
     socket.emit("document/load", {
       data: data || {},
       err: err,
       id: documentID,
+      name: documentName || ""
     });
     socket.on("document/change", (delta) => {
       socket.broadcast.to(documentID).emit("document/recive", delta);
@@ -22,8 +23,8 @@ module.exports = (socket, io) => {
 async function getDocument(documentID) {
   try {
     const document = await Document.findById(documentID);
-    return [false, document.data];
+    return [false, document.data, document.name];
   } catch {
-    return [true, {}];
+    return [true, {}, {}];
   }
 }

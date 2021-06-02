@@ -20,7 +20,7 @@ export default function DocumentCard({
     <Link
       onClick={
         type === "document"
-          ? ""
+          ? () => ""
           : () => {
               setLoading(true);
               setFolder([]);
@@ -34,15 +34,17 @@ export default function DocumentCard({
     >
       <div className="bg-white group shadow-lg rounded-lg p-5 group hover:bg-accent">
         <div className="flex text-accent group-hover:text-white space-x-1">
-          <div className="text-center self-center">
-            {type === "document" ? (
-              <DocumentTextIcon className="w-5" />
-            ) : (
-              <FolderIcon className="w-5" />
-            )}
-          </div>
-          <div>
-            <h3 className="font-semibold">{title}</h3>
+          <div className="flex flex-row">
+            <div className="text-center self-center">
+              {type === "document" ? (
+                <DocumentTextIcon className="w-5" />
+              ) : (
+                <FolderIcon className="w-5" />
+              )}
+            </div>
+            <div>
+              <h3 className="font-semibold">{title}</h3>
+            </div>
           </div>
         </div>
         <div className="text-sm text-gray-500 group-hover:text-gray-800">

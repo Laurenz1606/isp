@@ -1,4 +1,8 @@
-import { DocumentAddIcon, FolderAddIcon, TrashIcon } from "@heroicons/react/outline";
+import {
+  DocumentAddIcon,
+  FolderAddIcon,
+  TrashIcon,
+} from "@heroicons/react/outline";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import DocumentHeaderButton from "../Components/Documents/DocumentHeaderButton";
@@ -38,7 +42,7 @@ export default function Documents() {
       if (FolderPath.startsWith("/")) {
         (async () => {
           let res = await fetcher("/documents/get?path=" + FolderPath, "GET");
-          console.log(res)
+          console.log(res);
           setDocuments(
             res.documents.sort((a, b) => b.changedDate - a.changedDate)
           );
@@ -64,7 +68,7 @@ export default function Documents() {
   return (
     <>
       <div className="">
-        <div className="flex space-x-5">
+        <div className="block md:flex-wrap md:flex">
           <DocumentHeaderButton
             action={() => setDocumentModalOpen((prev) => !prev)}
             icon={<DocumentAddIcon className="w-8 h-8" />}
@@ -75,14 +79,16 @@ export default function Documents() {
             icon={<FolderAddIcon className="w-8 h-8" />}
             text="Neuer Ordner"
           />
-          {FolderPath === "/" ? "" :
+          {FolderPath === "/" ? (
+            ""
+          ) : (
             <DocumentHeaderButton
               type="delete"
               action={() => setFolderDeleteIsOpen((prev) => !prev)}
               icon={<TrashIcon className="w-8 h-8" />}
               text="Ordner Löschen"
             />
-          }
+          )}
         </div>
         <Path paths={fetchedPaths} fullpaths={fullPaths} />
         <ItemsGrid
