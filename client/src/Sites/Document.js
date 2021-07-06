@@ -4,7 +4,8 @@ import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import "./styles.css";
 import DocumentHeaderButton from "../Components/Documents/DocumentHeaderButton";
-import { ChevronLeftIcon } from "@heroicons/react/outline";
+import SavePresetModal from "../Components/Documents/SavePresetModal";
+import { ChevronLeftIcon, SaveIcon } from "@heroicons/react/outline";
 import { useHistory, useParams } from "react-router-dom";
 import { useQuery } from "../Functions/ReactRouterDomHooks";
 
@@ -21,12 +22,20 @@ const TOOLBARS_OPTIONS = [
 ];
 
 export default function Document() {
+
   const { id: paramid } = useParams();
   const backPath = useQuery().get("path");
   const [quill, setQuill] = useState();
-  const [name, setName] = useState(null);
+  const [name, setName] = useState("Dokument");
   const [socket, setSocket] = useState();
+  const [ModalIsOpen, setModalIsOpen] = useState(false);
   const history = useHistory();
+
+
+  useEffect(() => {
+    document.title = document.config.title.replace("[SITE]", name);
+  }, [name]);
+
 
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -96,16 +105,34 @@ export default function Document() {
   }, [socket, quill]);
 
   return (
-    <div className="flex-col flex-1" style={{ maxWidth: "100vw" }}>
-      <div className=" flex items-center space-x-5 flex-wrap justify-center md:justify-start p-5">
-        <DocumentHeaderButton
-          action={() => history.push("/documents?path=" + backPath)}
-          icon={<ChevronLeftIcon className="w-8 h-8" />}
-          text="Zurück"
-        />
-        <h1 className="text-xl font-medium">{name !== null ? name : "Loading..."}</h1>
+    <>
+      <div className="flex-col flex-1" style={{ maxWidth: "100vw" }}>
+        <div className="print-none flex items-center md:space-x-5 flex-wrap justify-center md:justify-start p-5">
+          <DocumentHeaderButton
+            action={() => history.push("/documents?path=" + backPath)}
+            icon={<ChevronLeftIcon className="w-8 h-8" />}
+            text="Zurück"
+          />
+          <DocumentHeaderButton
+            action={() => setModalIsOpen((open) => !open)}
+            icon={<SaveIcon className="w-8 h-8" />}
+            text="Vorlage speichern"
+          />
+          <h1 className="break-all text-xl font-medium">
+            {name !== null ? name : "Loading..."}
+          </h1>
+        </div>
+        <div className="container-text" ref={wrapperRef}></div>
       </div>
-      <div className="container-text" ref={wrapperRef}></div>
-    </div>
+      {ModalIsOpen ? (
+        <SavePresetModal
+          id={paramid}
+          isOpen={ModalIsOpen}
+          setIsOpen={setModalIsOpen}
+        />
+      ) : (
+        ""
+      )}
+    </>
   );
 }

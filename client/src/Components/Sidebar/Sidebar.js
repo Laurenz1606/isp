@@ -3,12 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import {
   AdjustmentsIcon,
   CalendarIcon,
+  ChartSquareBarIcon,
   ClipboardListIcon,
   CloudIcon,
   CogIcon,
-  CreditCardIcon,
   DatabaseIcon,
   DocumentTextIcon,
+  HomeIcon,
   LogoutIcon,
   MailIcon,
   MenuIcon,
@@ -22,7 +23,7 @@ export default function Sidebar({ children }) {
   const location = useLocation().pathname;
 
   function toggleNavbar() {
-    setSidebarOpen((prev) => !prev);
+    setSidebarOpen(!sidebarOpen);
   }
 
   function checkIfdocuments() {
@@ -37,7 +38,6 @@ export default function Sidebar({ children }) {
         <Link to="/dashboard" className="block p-4 text-white font-bold">
           mk:return ISP
         </Link>
-
         <button onClick={toggleNavbar} className="group p-4 hover:bg-gray-700">
           <MenuIcon className="h-5 w-5" />
         </button>
@@ -68,6 +68,12 @@ export default function Sidebar({ children }) {
         <nav>
           <SidebarItem
             action={toggleNavbar}
+            to="/dashboard"
+            text="Dashboard"
+            icon={<HomeIcon className="h-6 w-6" />}
+          />
+          <SidebarItem
+            action={toggleNavbar}
             to="/mails"
             text="E-Mails"
             icon={<MailIcon className="h-6 w-6" />}
@@ -94,7 +100,7 @@ export default function Sidebar({ children }) {
             action={toggleNavbar}
             to="/provision"
             text="Provision"
-            icon={<CreditCardIcon className="h-6 w-6" />}
+            icon={<ChartSquareBarIcon className="h-6 w-6" />}
           />
           <SidebarItem
             action={toggleNavbar}
@@ -123,7 +129,7 @@ export default function Sidebar({ children }) {
           </button>
         </nav>
       </div>
-      <div className={"flex-1 md:ml-64 " + (checkIfdocuments() === true ? "flex justify-center" : "p-5")}>
+      <div className={"flex-1 md:ml-64 " + (checkIfdocuments() === true ? "flex justify-center" : "p-2 md:p-5")}>
         {children}
       </div>
     </div>

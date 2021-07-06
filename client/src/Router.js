@@ -8,6 +8,7 @@ import SidebarManager from "./Components/SidebarManager";
 import Provision from "./Sites/Provision";
 import Document from "./Sites/Document";
 import Documents from "./Sites/Documents";
+import Mails from "./Sites/Mails";
 
 function Start() {
   useEffect(() => {
@@ -44,6 +45,13 @@ export default function Router() {
           <Route path="/provision">
             <SidebarManager>
               <Provision />
+            </SidebarManager>
+          </Route>
+
+          {/* provisions mails */}
+          <Route path="/mails">
+            <SidebarManager>
+              <Mails />
             </SidebarManager>
           </Route>
 

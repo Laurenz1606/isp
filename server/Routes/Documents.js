@@ -1,11 +1,14 @@
 //dependencies
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const { v4 } = require("uuid");
+
+const authenticateToken = require("./VerifyToken");
 
 //mongodb models
 const Folder = require("../Models/DocumentFolder");
 const Document = require("../Models/Document");
+const DocumentFolder = require("../Models/DocumentFolder");
+const DocumentPreset = require("../Models/DocumentPreset");
 
 //express config
 const Route = express.Router();
@@ -13,16 +16,16 @@ const Route = express.Router();
 Route.get("/get", authenticateToken, async (req, res) => {
   try {
     const folder = await Folder.find({ path: req.query.path });
-    const allDocuments = []
-    const allFolders = []
-    const data = folder[0].data
-    for(let obj of data) {
-      if(obj.type === "document") {
-        allDocuments.push((await Document.find({_id: obj.documentID}))[0])
+    const allDocuments = [];
+    const allFolders = [];
+    const data = folder[0].data;
+    for (let obj of data) {
+      if (obj.type === "document") {
+        allDocuments.push((await Document.find({ _id: obj.documentID }))[0]);
       }
 
-      if(obj.type === "folder") {
-        allFolders.push((await Folder.find({_id: obj.documentID}))[0])
+      if (obj.type === "folder") {
+        allFolders.push((await Folder.find({ _id: obj.documentID }))[0]);
       }
     }
     let newDocuments = [];
@@ -40,7 +43,7 @@ Route.get("/get", authenticateToken, async (req, res) => {
       )
         newDocuments.push(Document);
     }
-    res.json({folders: allFolders, documents: newDocuments, code: 0 });
+    res.json({ folders: allFolders, documents: newDocuments, code: 0 });
   } catch (err) {
     console.log(err);
   }
@@ -48,12 +51,12 @@ Route.get("/get", authenticateToken, async (req, res) => {
 
 Route.post("/getpaths", authenticateToken, async (req, res) => {
   try {
-    let newPaths = []
-    for(let path of req.body.path) {
-      let newPath = await Folder.find({_id: path})
-      newPaths.push(newPath[0].name)
+    let newPaths = [];
+    for (let path of req.body.path) {
+      let newPath = await Folder.find({ _id: path });
+      newPaths.push(newPath[0].name);
     }
-    res.json({ code: 0, paths: newPaths})
+    res.json({ code: 0, paths: newPaths });
   } catch (err) {
     console.log(err);
   }
@@ -63,21 +66,28 @@ Route.post("/addDoc", authenticateToken, async (req, res) => {
   const doc = await new Document({
     _id: v4(),
     name: req.body.name,
-    data: {},
+    data: req.body.preset
+      ? (
+          await Document.findById(req.body.preset.value)
+        ).data
+      : {},
     createDate: +new Date(),
     changedDate: +new Date(),
     roles: req.body.roles,
     owner: { name: req.user.name, roles: req.user.roles, _id: req.user._id },
   });
-  const newDoc = await doc.save()
-  const folder = await Folder.find({path: req.query.path})
-  folder[0].data = [...folder[0].data, {type: "document", documentID: newDoc._id}]
-  await folder[0].save()
+  const newDoc = await doc.save();
+  const folder = await Folder.find({ path: req.query.path });
+  folder[0].data = [
+    ...folder[0].data,
+    { type: "document", documentID: newDoc._id },
+  ];
+  await folder[0].save();
   res.json({ code: 0, document: newDoc });
 });
 
 Route.post("/addFolder", authenticateToken, async (req, res) => {
-  const uuid = v4()
+  const uuid = v4();
   const doc = await new Folder({
     _id: uuid,
     name: req.body.name,
@@ -86,97 +96,114 @@ Route.post("/addFolder", authenticateToken, async (req, res) => {
     owner: { name: req.user.name, _id: req.user._id },
     path: req.query.path + uuid + "/",
   });
-  const newDoc = await doc.save()
-  const folder = await Folder.find({path: req.query.path})
-  folder[0].data = [...folder[0].data, {type: "folder", documentID: newDoc._id}]
-  await folder[0].save()
+  const newDoc = await doc.save();
+  const folder = await Folder.find({ path: req.query.path });
+  folder[0].data = [
+    ...folder[0].data,
+    { type: "folder", documentID: newDoc._id },
+  ];
+  await folder[0].save();
   res.json({ code: 0, folder: newDoc });
 });
 
-Route.post("/addFolder", authenticateToken, async (req, res) => {
-  const doc = await new Folder({
-    _id: v4(),
-    name: req.body.name,
-    data: [],
-    createDate: +new Date(),
-    owner: { name: req.user.name, _id: req.user._id },
-    path: req.query.path + req.body.name,
+Route.post("/rename", authenticateToken, async (req, res) => {
+  req.body.data.forEach(async (data) => {
+    if (data.type === "document") {
+      const element = await Document.findById(data.id);
+      element.name = req.body.name;
+      await element.save();
+    } else if (data.type === "folder") {
+      const element = await DocumentFolder.findById(data.id);
+      element.name = req.body.name;
+      await element.save();
+    }
   });
-  res.json({ code: 0, document: await doc.save() });
+  res.json({ code: 0, data: req.body });
 });
 
-Route.post("/deleteFolder", async (req, res) => {
-  if(req.body.folder === undefined || req.body.folder ===  null || req.body.folder ===  "/") return res.json({})
-  const start = {documentID: req.body.folder}
-
-  removeFoldersAndFilesRecursive([start])
-  const FolderGet = Folder.findById(req.body.folder)
-  let path = FolderGet.path.split("/")
-  const ParentFodler = await Folder.findById(path[path.length - 2])
-  testForChild(req.body.folder, ParentFodler)
-
-  async function removeFoldersAndFilesRecursive(childrens) {
-    childrens.forEach(async (children) => {
-      const folder = await Folder.findById(children.documentID)
-      // await Folder.findById()
-      if(children.documentID === req.body.folder) await Folder.deleteOne({_id: children.documentID})
-      pushIDsIntoArray(folder.data)
-      if(checkIfFolderHasSubFolders(folder.data)) {
-        removeFoldersAndFilesRecursive(folder.data.filter(element => element.type === "folder"))
-      }
-      else {
-        return
-      }
-    })
-  }
-
-  function testForChild(childId, parent) {
-    let newdata = []
-    parent.data.forEach(dataelement => {
-      if(dataelement.type === "folder" && dataelement.documentID === childId) {
-      } else {
-        newdata.push(dataelement)
-      }
-    })
-    parent.data = newdata
-    parent.save()
-  }
-
-  function pushIDsIntoArray(data) {
-    data.forEach(element => {
-      if(element.type === "folder") Folder.deleteOne({_id: element.documentID})
-      if(element.type === "document") Document.deleteOne({_id: element.documentID})
-    })
-  }
-
-  function checkIfFolderHasSubFolders(data) {
-    let check = false
-    data.forEach((dataelement) => {
-      if(dataelement.type === "folder") check = true
-    })
-    return check
-  }
-})
-
-
-//authToken function
-function authenticateToken(req, res, next) {
-  //get the token from the header
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  //check if token exists
-  if (token == null) return res.sendStatus(401);
-
-  //verify user
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    //user token is wrong
-    if (err) return res.sendStatus(403);
-
-    //set the user to the request.user
-    req.user = user;
-    next();
+Route.post("/creeatePreset", authenticateToken, async (req, res) => {
+  const preset = await new DocumentPreset({
+    _id: v4(),
+    presetID: req.body.data,
+    name: req.body.name,
   });
-}
+  res.json({ code: 0, data: await preset.save() });
+});
+
+Route.get("/getPresets", authenticateToken, async (req, res) => {
+  const presets = await DocumentPreset.find();
+  res.json({ code: 0, data: presets });
+});
+
+Route.delete("/delete", authenticateToken, async (req, res) => {
+  if (req.body === []) {
+    res.json({ code: 0 });
+    return;
+  }
+  deleteItems(req.body);
+
+  function deleteItems(data) {
+    data = [...data, { parent: data[0].parent }];
+    let filter = [];
+    try {
+      data.forEach(async (element, idx) => {
+        if (data.length - 1 !== idx) {
+          if (element.type === "document") {
+            filter.push(element.id);
+            await Document.deleteOne({ _id: element.id });
+            await DocumentPreset.deleteMany({ presetID: element.id });
+          } else if (element.type === "folder") {
+            filter.push(element.id);
+            await removeChildren(element.id);
+            await DocumentFolder.deleteOne({ _id: element.id });
+          }
+        } else {
+          let parentElement;
+          if (element.parent === "") {
+            const x = await DocumentFolder.find({ path: "/" });
+            parentElement = x[0];
+          } else {
+            parentElement = await DocumentFolder.findById(element.parent);
+          }
+          let filterData = parentElement.data;
+          filter.forEach((elementid) => {
+            filterData.forEach((children, idx) => {
+              if (children.documentID == elementid) {
+                filterData.splice(idx, 1);
+              }
+            });
+          });
+          parentElement.save();
+        }
+      });
+    } catch (err) {
+      console.log(err);
+      res.json({ code: 0 });
+    }
+  }
+
+  let children = [];
+
+  async function removeChildren(id) {
+    let folders = await DocumentFolder.find({
+      path: { $regex: new RegExp("/" + id + "/"), $options: "" },
+    });
+    folders.forEach((folder) => {
+      folder.data.forEach((data) => {
+        if (data.type === "document") {
+          children.push({ id: data.documentID, type: data.type });
+        }
+      });
+    });
+    children.forEach(async (element) => {
+      await Document.deleteOne({ _id: element.id });
+    });
+    folders.forEach(async (element) => {
+      await DocumentFolder.deleteOne({ _id: element._id });
+    });
+  }
+
+  res.json({ code: 0 });
+});
 
 module.exports = Route;

@@ -26,6 +26,17 @@ const userSchema = new Schema({
     required: true,
     default: ["Marketing"],
   },
+  provision: {
+    type: Object,
+    default: {
+      currentMonth: {
+        prevMonth: 0,
+        currentIncome: 0,
+        currentOut: 0,
+      },
+      prevMonths: [],
+    },
+  },
 });
 
 //export the module

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import ModalRoleCheck from "./ModalRoleCheck";
+import ModalPresetCheck from "./ModalPresetCheck";
 import { fetcher } from "../../Functions/AuthFunctions";
 import { useHistory } from "react-router";
 
@@ -22,6 +23,17 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
 
   const history = useHistory();
   const [error, setError] = useState(false);
+  const [presets, sePresets] = useState(null);
+  const [preset, setPreset] = useState(null);
+  useEffect(() => {
+    if (type === "document") {
+      async function x() {
+        let y = await fetcher("/documents/getPresets", "GET");
+        sePresets(y.data);
+      }
+      x();
+    }
+  }, [isOpen, type]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (e.target[0].value === "") {
@@ -30,16 +42,17 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
     }
     let roles = [];
     for (var i = 1; i < e.target.length - 2; i++) {
-      roles.push({
-        role: e.target[i].name,
-        value: JSON.parse(e.target[i].value),
-      });
+      if (e.target[i].type === "checkbox") {
+        roles.push({
+          role: e.target[i].name,
+          value: JSON.parse(e.target[i].value),
+        });
+      }
     }
     roles = roles.filter((role) => role.value === true);
     roles = roles.map((role) => role.role);
-    const body = { name: e.target[0].value, roles };
+    const body = { name: e.target[0].value, roles, preset };
     const res = await fetcher(genererateFetchurl(type), "POST", body);
-    console.log(res);
     setIsOpen(false);
     if (type === "document")
       history.push("/documents/" + res.document._id + "?path=" + FolderPath);
@@ -58,7 +71,8 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
 
       <Dialog
         open={isOpen}
-        className="bg-white z-30 rounded-2xl fixed top-1/4 left-1/2 transform -translate-y-1/2 -translate-x-1/2 p-5 flex justify-center items-center flex-col"
+        style={{ maxHeight: "60vh" }}
+        className="bg-white z-30 rounded-2xl fixed overflow-y-auto top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 p-5 flex items-center flex-col"
         onClose={() => setIsOpen(false)}
       >
         <form onSubmit={handleSubmit}>
@@ -94,17 +108,27 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
             )}
           </div>
           {type === "document" ? (
-            <div className="p-3 w-screen modal-document pt-0 flex justify-center flex-col">
-              <Dialog.Title className="text-center font-semibold text-lg pb-1">
-                Berechtigungen
-              </Dialog.Title>
-              <div className="space-y-5">
-                <ModalRoleCheck text="Abteilungsleitung" />
-                <ModalRoleCheck text="Marketing" />
-                <ModalRoleCheck text="Logistik" />
-                <ModalRoleCheck text="Hallo" />
+            <>
+              <div className="p-3 w-screen modal-document pt-0 flex justify-center flex-col">
+                <Dialog.Title className="text-center font-semibold text-lg pb-1">
+                  Berechtigungen
+                </Dialog.Title>
+                <div className="space-y-5">
+                  <ModalRoleCheck text="Abteilungsleitung" />
+                  <ModalRoleCheck text="Marketing" />
+                  <ModalRoleCheck text="Logistik" />
+                  <ModalRoleCheck text="Hallo" />
+                </div>
               </div>
-            </div>
+              <div className="p-3 w-screen modal-document pt-0 flex justify-center flex-col">
+                <Dialog.Title className="text-center font-semibold text-lg pb-1">
+                  Vorlagen
+                </Dialog.Title>
+                <div className="space-y-5">
+                  <ModalPresetCheck presets={presets} setPreset={setPreset} />
+                </div>
+              </div>
+            </>
           ) : (
             ""
           )}

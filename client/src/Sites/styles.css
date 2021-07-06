@@ -33,10 +33,32 @@
   margin: 1in;
 }
 
+.login-bg {
+  /* The image used */
+  background-image: url("../images/Login-Screen.png");
+
+  /* Full height */
+  height: 100vh;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 @media print {
   .sidebar {
     display: none;
   }
+
+  .print-none {
+    display: none !important;
+  }
+
+  .container-text .ql-container.ql-snow {
+    display: unset;
+  }
+
   body {
     background-color: none;
   }
@@ -45,8 +67,8 @@
     margin: 0;
     box-shadow: none;
     align-self: flex-start;
-    padding: 1cm;
-    min-height: 297mm;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .container-text .ql-toolbar.ql-snow {
@@ -73,44 +95,44 @@
 
 .ql-editor li.ql-indent-1:not(.ql-direction-rtl) {
   padding-left: 2.5em !important;
-} 
+}
 
 .ql-editor li.ql-indent-2:not(.ql-direction-rtl) {
   padding-left: 4.5em !important;
-} 
+}
 
 .ql-editor li.ql-indent-3:not(.ql-direction-rtl) {
   padding-left: 6em !important;
-} 
+}
 
 .ql-editor li.ql-indent-4:not(.ql-direction-rtl) {
   padding-left: 7.5em !important;
-} 
+}
 
 .ql-editor li.ql-indent-5:not(.ql-direction-rtl) {
   padding-left: 9em !important;
-} 
+}
 
 .ql-editor li.ql-indent-6:not(.ql-direction-rtl) {
   padding-left: 10.5em !important;
-} 
+}
 
 .ql-editor li.ql-indent-7:not(.ql-direction-rtl) {
   padding-left: 12em !important;
-} 
+}
 
 .ql-editor li.ql-indent-8:not(.ql-direction-rtl) {
   padding-left: 13.5em !important;
-} 
+}
 
 @media screen and (max-width: 767px) {
   .container-text .ql-toolbar.ql-snow {
     display: block;
   }
 
-  /* .modal-document {
+  .modal-document {
     width: 60vw;
-  } */
+  }
   .ql-container .ql-editor {
     margin: 0px;
     width: 100%;

@@ -1,13 +1,16 @@
 import {
+  CogIcon,
   DocumentAddIcon,
   FolderAddIcon,
+  PencilIcon,
   TrashIcon,
+  XIcon,
 } from "@heroicons/react/outline";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import DocumentHeaderButton from "../Components/Documents/DocumentHeaderButton";
 import Modal from "../Components/Documents/DocumentModal";
-import DeleteFolderModal from "../Components/Documents/DeleteFolderModal";
+import RenameModal from "../Components/Documents/RenameModal";
 import { fetcher } from "../Functions/AuthFunctions";
 import { useQuery } from "../Functions/ReactRouterDomHooks";
 import ItemsGrid from "../Components/Documents/ItemsGrid";
@@ -15,6 +18,11 @@ import { StringToArray } from "../Functions/CommonFunctions";
 import Path from "../Components/Documents/Path";
 
 export default function Documents() {
+  useEffect(() => {
+    document.title = document.config.title.replace("[SITE]", "Dokumente");
+  }, []);
+
+
   const history = useHistory();
   const FolderPath = useQuery().get("path");
   const [documents, setDocuments] = useState([]);
@@ -25,7 +33,10 @@ export default function Documents() {
   const [loading, setLoading] = useState(true);
   const [DocumentModalIsOpen, setDocumentModalOpen] = useState(false);
   const [FolderModalIsOpen, setFolderModalOpen] = useState(false);
-  const [FolderDeleteIsOpen, setFolderDeleteIsOpen] = useState(false);
+  const [RenameModalIsOpen, setRenameModalIsOpen] = useState(false);
+  const [refetch, setRefetch] = useState(false);
+  const [edit, setEdit] = useState(0);
+  const [checkedElements, setCheckedElements] = useState([]);
 
   function joinPaths(pathArray) {
     let newPathArray = [];
@@ -37,12 +48,20 @@ export default function Documents() {
     return resultPaths;
   }
 
+  function toggleItem(id, type, state) {
+    if (state) {
+      const parent = FolderPath.split("/")[FolderPath.split("/").length - 2];
+      setCheckedElements((prev) => [...prev, { id, type, parent }]);
+    } else {
+      setCheckedElements((prev) => prev.filter((ele) => ele.id !== id));
+    }
+  }
+
   useEffect(() => {
     if (FolderPath !== null) {
       if (FolderPath.startsWith("/")) {
         (async () => {
           let res = await fetcher("/documents/get?path=" + FolderPath, "GET");
-          console.log(res);
           setDocuments(
             res.documents.sort((a, b) => b.changedDate - a.changedDate)
           );
@@ -56,7 +75,8 @@ export default function Documents() {
     } else {
       history.push("/documents?path=/");
     }
-  }, [FolderPath, history]);
+  }, [FolderPath, history, refetch]);
+
   useEffect(() => {
     const getNames = async () => {
       let res = await fetcher("/documents/getpaths", "POST", { path });
@@ -65,33 +85,68 @@ export default function Documents() {
     };
     getNames();
   }, [path]);
+
   return (
     <>
       <div className="">
         <div className="block md:flex-wrap md:flex">
-          <DocumentHeaderButton
-            action={() => setDocumentModalOpen((prev) => !prev)}
-            icon={<DocumentAddIcon className="w-8 h-8" />}
-            text="Neues Dokument"
-          />
-          <DocumentHeaderButton
-            action={() => setFolderModalOpen((prev) => !prev)}
-            icon={<FolderAddIcon className="w-8 h-8" />}
-            text="Neuer Ordner"
-          />
-          {FolderPath === "/" ? (
-            ""
+          {edit === 0 ? (
+            <>
+              <DocumentHeaderButton
+                action={() => setDocumentModalOpen((prev) => !prev)}
+                icon={<DocumentAddIcon className="w-8 h-8" />}
+                text="Neues Dokument"
+              />
+              <DocumentHeaderButton
+                action={() => setFolderModalOpen((prev) => !prev)}
+                icon={<FolderAddIcon className="w-8 h-8" />}
+                text="Neuer Ordner"
+              />
+              <DocumentHeaderButton
+                action={() => {
+                  setCheckedElements([]);
+                  setEdit(1);
+                }}
+                icon={<CogIcon className="w-8 h-8 -ml-1" />}
+                text="Bearbeiten"
+              />
+            </>
           ) : (
-            <DocumentHeaderButton
-              type="delete"
-              action={() => setFolderDeleteIsOpen((prev) => !prev)}
-              icon={<TrashIcon className="w-8 h-8" />}
-              text="Ordner Löschen"
-            />
+            <>
+              <DocumentHeaderButton
+                action={() => setRenameModalIsOpen((prev) => !prev)}
+                icon={<PencilIcon className="w-8 h-8" />}
+                text="Umbenennen"
+              />
+              <DocumentHeaderButton
+                type="delete"
+                action={async () => {
+                  const res = await fetcher(
+                    "/documents/delete",
+                    "DELETE",
+                    checkedElements
+                  );
+                  if (res.code === 0) {
+                    setRefetch((old) => !old);
+                    setEdit(0);
+                  }
+                }}
+                icon={<TrashIcon className="w-8 h-8" />}
+                text="Löschen"
+              />
+              <DocumentHeaderButton
+                type="delete"
+                action={() => setEdit(0)}
+                icon={<XIcon className="w-8 h-8 -ml-1" />}
+                text="Abbrechen"
+              />
+            </>
           )}
         </div>
         <Path paths={fetchedPaths} fullpaths={fullPaths} />
         <ItemsGrid
+          toggle={toggleItem}
+          editMode={edit}
           setLoading={setLoading}
           setFolders={setFolders}
           setDocuments={setDocuments}
@@ -113,9 +168,12 @@ export default function Documents() {
         type="folder"
         FolderPath={FolderPath}
       />
-      <DeleteFolderModal
-        isOpen={FolderDeleteIsOpen}
-        setIsOpen={setFolderDeleteIsOpen}
+      <RenameModal
+        setEdit={setEdit}
+        isOpen={RenameModalIsOpen}
+        setIsOpen={setRenameModalIsOpen}
+        data={checkedElements}
+        setRefetch={setRefetch}
       />
     </>
   );

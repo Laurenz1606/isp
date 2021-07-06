@@ -5,3 +5,15 @@
 button, a, input {
   @apply focus:outline-none;
 }
+
+button, a {
+  cursor: pointer;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.login::placeholder {
+  /* @apply */
+}

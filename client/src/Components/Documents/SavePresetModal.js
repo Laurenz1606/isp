@@ -1,10 +1,27 @@
+import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { fetcher } from "../../Functions/AuthFunctions";
 
-export default function DeleteFolderModal({ isOpen, setIsOpen }) {
-  function handleSubmit(e) {
+export default function Modal({
+  isOpen,
+  setIsOpen,
+  id,
+}) {
+  const [error, setError] = useState(false);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  }
+    if (e.target[0].value === "") {
+      setError(true);
+      return;
+    } else {
+      await fetcher("/documents/creeatePreset", "POST", {
+        name: e.target[0].value,
+        data: id,
+      });
+      setIsOpen((open) => !open);
+    }
+  };
+
   return (
     <>
       <div
@@ -24,25 +41,46 @@ export default function DeleteFolderModal({ isOpen, setIsOpen }) {
             <Dialog.Overlay />
 
             <Dialog.Title className="text-center font-semibold text-lg">
-              Möchtest du diesen Ordner löschen?
+              Vorlage erstellen
             </Dialog.Title>
-            <p>
-              Dein jetziger Ordner wird inklusive aller Dateien und Ordnern in
-              ihm irreversibel gelöscht.
-            </p>
           </div>
+          <div className="flex-row p-3 w-screen modal-document">
+            <input
+              id="DocumentAddModal"
+              onChange={(e) => {
+                if (e.target.value !== "") {
+                  setError(false);
+                }
+              }}
+              className={
+                "w-full border-2 rounded-lg p-2 focus:border-accent" +
+                (error ? " border-red-500" : "")
+              }
+              placeholder={"Name der Vorlage"}
+              type="text"
+              name="DocumentName"
+            />
+            {error ? (
+              <span className="text-sm text-red-500">
+                Der Name darf nicht Leer sein!
+              </span>
+            ) : (
+              ""
+            )}
+          </div>
+
           <div className="flex-row space-x-4 text-white mt-4">
             <button
               className="bg-accent py-2 px-5 rounded-full hover:bg-white hover:border-accent border-2 border-white hover:text-accent"
               type="submit"
             >
-              Löschen
+              Erstellen
             </button>
             <button
               className="bg-red-500 py-2 px-5 rounded-full hover:bg-white hover:border-red-500 border-2 border-white hover:text-red-500"
               onClick={() => setIsOpen(false)}
             >
-              Abbrechen
+              Schließen
             </button>
           </div>
         </form>

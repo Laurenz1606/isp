@@ -16,6 +16,7 @@ const io = require("socket.io")(process.env.SOCKETPORT || 5000, {
 //routes
 const authRouter = require("./Routes/Auth");
 const documentsRouter = require("./Routes/Documents");
+const provisionRouter = require("./Routes/Provision");
 
 //socket routes
 const documentsSocket = require("./Socket.io/Documents");
@@ -53,6 +54,7 @@ app.use(cors());
 //router
 app.use("/auth", authRouter);
 app.use("/documents", documentsRouter);
+app.use("/provision", provisionRouter);
 app.listen(process.env.PORT || 4000, () =>
   console.log("Express on Port: " + process.env.PORT || 4000)
 );
