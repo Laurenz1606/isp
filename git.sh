@@ -7,7 +7,7 @@ do
     esac
 done
 
-if [ $task = ""]
+if [ $task = "" ]
 then
 echo "Please specify task"
 echo "Example: ./git.sh -t [TASK]"
