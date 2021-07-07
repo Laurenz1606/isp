@@ -6,4 +6,4 @@ do
 done
 git add .
 git commit -m \$message\"
-git pus
+git push
