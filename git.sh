@@ -16,7 +16,7 @@ fi
 
 if [ ${task} = "c" ]
 then
-  git add .
+  git add .>/dev/null
   git commit -m $message
   git push
   branch=$(git branch --show-current)
