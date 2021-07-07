@@ -6,7 +6,15 @@ do
 
     esac
 done
-if [ $task = "c" ]
+if [ ${task} = ""]
+then
+echo "Please specify task"
+echo "Example: ./git.sh -t [TASK]"
+exit 1
+fi
+
+
+if [ ${task} = "c" ]
 then
   git add .
   git commit -m $message
