@@ -7,4 +7,6 @@ done
 git add .
 git commit -m $message
 git push
-echo $message
+
+tree=$(git branch --show-current)
+echo $tree
