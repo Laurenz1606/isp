@@ -5,5 +5,5 @@ do
     esac
 done
 git add .
-git commit -m \$username\"
-git push
+git commit -m \$message\"
+git pus
