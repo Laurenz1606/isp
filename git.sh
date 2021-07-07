@@ -9,4 +9,4 @@ git commit -m $message
 git push
 
 tree=$(git branch --show-current)
-echo $tree
+echo "Commited files with message \"$message\" to $tree"
