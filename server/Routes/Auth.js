@@ -114,6 +114,7 @@ Route.post("/register", async (req, res) => {
           name: req.body.username,
           email: req.body.email,
           hashedPassword: hashedPassword,
+          admin: req.body.admin
         });
         await user.save();
         res.status(201).json({ code: 6 });
