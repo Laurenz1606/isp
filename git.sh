@@ -7,7 +7,6 @@ do
     esac
 done
 
-#check if task is specified
 if [ ${task} = ""]
 then
 echo "Please specify task"
@@ -15,7 +14,6 @@ echo "Example: ./git.sh -t [TASK]"
 exit 1
 fi
 
-#commit to current branch
 if [ ${task} = "c" ]
 then
   git add .>/dev/null
