@@ -18,9 +18,9 @@ fi
 #commit to current branch
 if [ ${task} = "c" ]
 then
-  git add . > /dev/null 2>&1
-  git commit -m $message > /dev/null 2>&1
-  git push > /dev/null 2>&1
-  branch=$(git branch --show-current) > /dev/null 2>&1
+  git add .>/dev/null
+  git commit -m $message>/dev/null
+  git push>/dev/null
+  branch=$(git branch --show-current)>/dev/null
   echo "Commited files with message \"$message\" to branch $branch"
 fi
