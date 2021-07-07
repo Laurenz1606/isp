@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { decodeToken, fetcher } from "../Functions/AuthFunctions";
 import SplitCard from "../Components/Card/SplitCard";
 import SmallCard from "../Components/Card/SmallCard";
 import CardItemOuterContainer from "../Components/Card/CardItemOuterContainer";
@@ -87,7 +88,7 @@ const Protokolle = [
     _id: "u001f499",
     name: "Laurenz Rausche",
     date: "",
-  }
+  },
 ];
 
 export default function Index() {
@@ -95,9 +96,18 @@ export default function Index() {
     document.title = document.config.title.replace("[SITE]", "Dashboard");
   }, []);
 
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const x = async () => {
+      setName((await decodeToken()).name);
+    };
+    x();
+  }, []);
+
   return (
-    <div className="p-5">
-      <h1 className="mb-5 text-3xl font-bold">Wilkommen zurück, David!</h1>
+    <>
+      <h1 className="mb-5 text-3xl font-bold">Wilkommen zurück, {name}!</h1>
       <div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 focus:outline-none outline-none">
           <SplitCard classes="row-span-2" header="Ungelesene E-Mails">
@@ -120,8 +130,7 @@ export default function Index() {
 
           <div className="grid grid-cols-2 gap-3 focus:outline-none outline-none">
             <SmallCard header="Provision des letzten Monats">
-              <div className="p-4 pl-0 text-5xl">
-                {Provision.value.toString().replace(".", ",")}€
+              {<div className="p-4 pl-0 text-5xl">
                 <sup
                   className={
                     "text-4xl " +
@@ -133,7 +142,7 @@ export default function Index() {
                     : Provision.growth}
                   %
                 </sup>
-              </div>
+              </div>}
             </SmallCard>
             <SmallCard header="Geburtstag">
               {Birthdays.map((day, idx) => (
@@ -174,6 +183,6 @@ export default function Index() {
           </SmallCard>
         </div>
       </div>
-    </div>
+    </>
   );
 }

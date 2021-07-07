@@ -80,27 +80,21 @@ export default function Sidebar({ children }) {
           />
           <SidebarItem
             action={toggleNavbar}
+            to="/provision"
+            text="Provision"
+            icon={<ChartSquareBarIcon className="h-6 w-6" />}
+          />
+          <SidebarItem
+            action={toggleNavbar}
             to="/calendar"
             text="Kalender"
             icon={<CalendarIcon className="h-6 w-6" />}
           />
           <SidebarItem
             action={toggleNavbar}
-            to="/sammelwettbewerb"
-            text="Sammelwettbewerb"
-            icon={<ClipboardListIcon className="h-6 w-6" />}
-          />
-          <SidebarItem
-            action={toggleNavbar}
-            to="/alt-it-datenbank"
-            text="Alt-IT Datenbank"
-            icon={<DatabaseIcon className="h-6 w-6" />}
-          />
-          <SidebarItem
-            action={toggleNavbar}
-            to="/provision"
-            text="Provision"
-            icon={<ChartSquareBarIcon className="h-6 w-6" />}
+            to="/documents"
+            text="Dokumente"
+            icon={<DocumentTextIcon className="h-6 w-6" />}
           />
           <SidebarItem
             action={toggleNavbar}
@@ -110,9 +104,15 @@ export default function Sidebar({ children }) {
           />
           <SidebarItem
             action={toggleNavbar}
-            to="/documents"
-            text="Dokumente"
-            icon={<DocumentTextIcon className="h-6 w-6" />}
+            to="/alt-it-datenbank"
+            text="Alt-IT Datenbank"
+            icon={<DatabaseIcon className="h-6 w-6" />}
+          />
+          <SidebarItem
+            action={toggleNavbar}
+            to="/sammelwettbewerb"
+            text="Sammelwettbewerb"
+            icon={<ClipboardListIcon className="h-6 w-6" />}
           />
           <SidebarItem
             action={toggleNavbar}
@@ -129,7 +129,7 @@ export default function Sidebar({ children }) {
           </button>
         </nav>
       </div>
-      <div className={"flex-1 md:ml-64 " + (checkIfdocuments() === true ? "flex justify-center" : "p-2 md:p-5")}>
+      <div className={"flex-1 md:ml-64 " + (checkIfdocuments() === true ? "flex justify-center" : "p-2 md:p-10")}>
         {children}
       </div>
     </div>

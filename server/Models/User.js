@@ -34,7 +34,11 @@ const userSchema = new Schema({
         currentIncome: 0,
         currentOut: 0,
       },
-      prevMonths: [],
+      prevMonths: [{
+        prevMonth: 0,
+        currentIncome: 0,
+        currentOut: 0,
+      },],
     },
   },
 });

@@ -1,3 +1,4 @@
+import jwt_decode from "jwt-decode";
 const APIURL = "https://isp-server.mk-return.de";
 const AUTHURL = APIURL + "/auth";
 
@@ -50,6 +51,10 @@ export async function login(username, password, redirect) {
   } else {
     return response.code;
   }
+}
+
+export async function decodeToken(){
+  return await jwt_decode(getTokenFromLocalstorage("accessToken"))
 }
 
 export async function checktokensAndRefresh() {
