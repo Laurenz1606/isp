@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { decodeToken, fetcher } from "../Functions/AuthFunctions";
+import {
+  dateFormat,
+  fillArrayWithZero
+} from "../Functions/CommonFunctions";
 import SplitCard from "../Components/Card/SplitCard";
 import SmallCard from "../Components/Card/SmallCard";
 import CardItemOuterContainer from "../Components/Card/CardItemOuterContainer";
@@ -7,33 +11,34 @@ import MailWrapper from "../Components/Card/MailWrapper";
 import TaskWrapper from "../Components/Card/TaskWrapper";
 import CardMore from "../Components/Card/CardMore";
 import CardLink from "../Components/Card/CardLink";
+import Current from "../Components/Provision/Current";
 
 const Mails = [
   {
     _id: 1,
     betreff: "Text für BS Zeitung",
-    date: "30.06.2021 22:37",
+    date: randomDate(new Date(0), new Date()),
     recipient: "info@mk-return.de",
-    sender: "yung.hurn@example.com",
+    sender: "info@zeitung-bs.de",
   },
   {
     _id: 2,
-    betreff: "fortnite season pass",
-    date: "21.06.2021 13:37",
-    recipient: "david.jankowski@mk-return.de",
-    sender: "lolomat68@example.com",
+    betreff: "Neue Provision",
+    date: randomDate(new Date(0), new Date()),
+    recipient: "david.jankowski@mk-return.de, laurenz.rausche@mk-return.de",
+    sender: "maximilian.seitz@interseroh.com",
   },
   {
     _id: 3,
     betreff: "BETREFF",
-    date: "DATUM UHRZEIT",
+    date: randomDate(new Date(0), new Date()),
     recipient: "empfänger@example.com",
     sender: "absender@example.com",
   },
   {
     _id: 4,
     betreff: "fortnite season pass",
-    date: "21.06.2021 13:37",
+    date: randomDate(new Date(0), new Date()),
     recipient: "david.jankowski@mk-return.de",
     sender: "lolomat68@example.com",
   },
@@ -43,27 +48,22 @@ const Tasks = [
   {
     _id: 1,
     text: "Beantworten der BS Zeitung Mail",
-    date: "03.07.2021 18:00",
+    date: randomDate(new Date(0), new Date()),
     from: "Laurenz Rausche",
   },
   {
     _id: 2,
     text: "Unterschreiben der neuen Verträge",
-    date: "06.07.2021 21:00",
+    date: randomDate(new Date(0), new Date()),
     from: "Thorben Stauber",
   },
   {
     _id: 3,
     text: "BEISPIEL",
-    date: "DATUM UHRZEIT",
+    date: randomDate(new Date(0), new Date()),
     from: "AUFTRAGENDER",
   },
 ];
-
-const Provision = {
-  value: 187.69,
-  growth: 187,
-};
 
 const Birthdays = [
   {
@@ -91,16 +91,66 @@ const Protokolle = [
   },
 ];
 
+//-----------NUR ZUM TEST-------------------//
+function randomDate(start, end) {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+}
+//-----------NUR ZUM TEST-------------------//
+
 export default function Index() {
+  const [data, setData] = useState({ all: [{ currentIncome: 1 }] });
+  const [name, setName] = useState("");
+  const [growth, setGrowth] = useState(0);
   useEffect(() => {
     document.title = document.config.title.replace("[SITE]", "Dashboard");
   }, []);
 
-  const [name, setName] = useState("");
+  useEffect(() => {
+    const x = async () => {
+      setName((await decodeToken()).name);
+    };
+    x();
+  }, []);
+
+  useEffect(() => {
+    setGrowth(
+      Math.round(
+        (data.current?.currentIncome / data.all[0].currentIncome - 1) * 100
+      )
+    );
+  }, [data]);
 
   useEffect(() => {
     const x = async () => {
       setName((await decodeToken()).name);
+      let res = await fetcher("/provision/getAll", "GET");
+      setData({
+        income: fillArrayWithZero(
+          res.provision.prevMonths
+            .slice(0, 12)
+            .map((current) => current.currentIncome),
+          12
+        ).reverse(),
+        out: fillArrayWithZero(
+          res.provision.prevMonths
+            .slice(0, 12)
+            .map((current) => current.currentOut),
+          12
+        ).reverse(),
+        total: fillArrayWithZero(
+          res.provision.prevMonths
+            .slice(0, 12)
+            .map(
+              (current) =>
+                current.currentIncome + current.prevMonth - current.currentOut
+            ),
+          12
+        ).reverse(),
+        current: res.provision.currentMonth,
+        all: res.provision.prevMonths,
+      });
     };
     x();
   }, []);
@@ -115,7 +165,7 @@ export default function Index() {
               <CardItemOuterContainer to={"/mails/" + mail._id} key={mail._id}>
                 <MailWrapper
                   betreff={mail.betreff}
-                  date={mail.date}
+                  date={dateFormat(mail.date)}
                   recipient={mail.recipient}
                   sender={mail.sender}
                 />
@@ -129,25 +179,13 @@ export default function Index() {
           </SplitCard>
 
           <div className="grid grid-cols-2 gap-3 focus:outline-none outline-none">
-            <SmallCard header="Provision des letzten Monats">
-              {<div className="p-4 pl-0 text-5xl">
-                <sup
-                  className={
-                    "text-4xl " +
-                    (Provision.growth > 0 ? "text-accent" : "text-red-500")
-                  }
-                >
-                  {Provision.growth > 0
-                    ? "+" + Provision.growth
-                    : Provision.growth}
-                  %
-                </sup>
-              </div>}
+            <SmallCard header="Provision diesen Monat">
+              <Current data={data} growth={growth} />
             </SmallCard>
-            <SmallCard header="Geburtstag">
+            <SmallCard header="Geburtstage">
               {Birthdays.map((day, idx) => (
-                <p key={idx}>
-                  {day.name}({day.age}) {day.date}
+                <p className="text-sm md:text-lg" key={idx}>
+                  {day.name} {day.date}({day.age})
                 </p>
               ))}
             </SmallCard>
@@ -160,7 +198,7 @@ export default function Index() {
               <CardItemOuterContainer to={"/tasks/" + task._id} key={task._id}>
                 <TaskWrapper
                   text={task.text}
-                  date={task.date}
+                  date={dateFormat(task.date)}
                   from={task.from}
                 />
               </CardItemOuterContainer>

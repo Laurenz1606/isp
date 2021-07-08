@@ -12,6 +12,11 @@ const userSchema = new Schema({
   admin: {
     type: Boolean,
     require: true,
+    default: false,
+  },
+  active: {
+    type: Boolean,
+    require: true,
     default: true,
   },
   email: {

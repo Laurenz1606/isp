@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Line, defaults } from "react-chartjs-2";
 import { decodeToken, fetcher } from "../Functions/AuthFunctions";
+import { fillArrayWithZero, formatToEUR } from "../Functions/CommonFunctions";
 import SplitCard from "../Components/Card/SplitCard";
 import SmallCard from "../Components/Card/SmallCard";
 import CardBody from "../Components/Card/CardBody";
+import Current from "../Components/Provision/Current";
 import {
   ChevronDoubleRightIcon,
   ChevronDoubleLeftIcon,
@@ -20,14 +22,6 @@ export default function Provision() {
     document.title = document.config.title.replace("[SITE]", "Provision");
   }, []);
 
-  function fillArrayWithZero(arr, length) {
-    let newArray = [];
-    for (let index = 0; index < length - arr.length; index++) {
-      newArray.push(0);
-    }
-    return [...arr, ...newArray];
-  }
-
   useEffect(() => {
     setGrowth(
       Math.round(
@@ -36,20 +30,10 @@ export default function Provision() {
     );
   }, [data]);
 
-  function formatToEUR(number) {
-    let str = new Intl.NumberFormat("de-DE", {
-      style: "currency",
-      currency: "EUR",
-    }).format(number).replace(/\u00A0/g, "")
-    console.log(str)
-    return str;
-  }
-
   useEffect(() => {
     const x = async () => {
       setName((await decodeToken()).name);
       let res = await fetcher("/provision/getAll", "GET");
-      console.log(res.provision.prevMonths.slice(0, 12));
       setData({
         income: fillArrayWithZero(
           res.provision.prevMonths
@@ -140,10 +124,27 @@ export default function Provision() {
                         fill: true,
                         data: data.income,
                         backgroundColor: "rgba(0, 218, 0, 0.1)",
-                        pointBackgroundColor: "rgba(0, 218, 0, 1)",
+                        pointBackgroundColor: "rgba(0, 218, 0, 0)",
                         borderColor: "rgba(0, 218, 0, 1)",
                         borderWidth: 3,
                       },
+                      // {
+                      //   label: "Durchschnittliches Einkommen",
+                      //   fill: false,
+                      //   data: data.income?.map(() =>
+                      //     parseFloat(
+                      //       (
+                      //         data.income?.reduce((a, b) => a + b, 0) /
+                      //         data.income?.length
+                      //       ).toFixed(2)
+                      //     )
+                      //   ),
+                      //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+                      //   pointBackgroundColor: "rgba(0, 0, 0, 0)",
+                      //   borderColor: "rgba(0, 0, 0, 1)",
+                      //   borderWidth: 3,
+                      //   pointRadius: 0,
+                      // },
                     ],
                   }}
                   options={{
@@ -154,6 +155,7 @@ export default function Provision() {
                         {
                           ticks: {
                             beginAtZero: true,
+                            min: 0,
                           },
                         },
                       ],
@@ -179,6 +181,23 @@ export default function Provision() {
                         borderColor: "rgba(255, 0, 0, 1)",
                         borderWidth: 3,
                       },
+                      // {
+                      //   label: "Durchschnittliche Ausgaben",
+                      //   fill: false,
+                      //   data: data.out?.map(() =>
+                      //     parseFloat(
+                      //       (
+                      //         data.out?.reduce((a, b) => a + b, 0) /
+                      //         data.out?.length
+                      //       ).toFixed(2)
+                      //     )
+                      //   ),
+                      //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+                      //   pointBackgroundColor: "rgba(0, 0, 0, 0)",
+                      //   borderColor: "rgba(0, 0, 0, 1)",
+                      //   borderWidth: 3,
+                      //   pointRadius: 0,
+                      // },
                     ],
                   }}
                   options={{
@@ -189,6 +208,7 @@ export default function Provision() {
                         {
                           ticks: {
                             beginAtZero: true,
+                            min: 0,
                           },
                         },
                       ],
@@ -214,6 +234,23 @@ export default function Provision() {
                         borderColor: "rgba(0, 0, 255, 1)",
                         borderWidth: 3,
                       },
+                      // {
+                      //   label: "Durchschnittliche Gesamtprovision",
+                      //   fill: false,
+                      //   data: data.total?.map(() =>
+                      //     parseFloat(
+                      //       (
+                      //         data.total?.reduce((a, b) => a + b, 0) /
+                      //         data.total?.length
+                      //       ).toFixed(2)
+                      //     )
+                      //   ),
+                      //   backgroundColor: "rgba(0, 0, 0, 0.1)",
+                      //   pointBackgroundColor: "rgba(0, 0, 0, 0)",
+                      //   borderColor: "rgba(0, 0, 0, 1)",
+                      //   borderWidth: 3,
+                      //   pointRadius: 0,
+                      // },
                     ],
                   }}
                   options={{
@@ -224,6 +261,7 @@ export default function Provision() {
                         {
                           ticks: {
                             beginAtZero: true,
+                            min: 0,
                           },
                         },
                       ],
@@ -246,76 +284,65 @@ export default function Provision() {
         <SplitCard header="Persönliche Statistiken" classes="lg:col-span-5">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 focus:outline-none outline-none">
             <CardBody>
-              {!isNaN(growth) ? (
-                <div className="text-5xl">
-                  {formatToEUR(
-                    data.current?.prevMonth +
-                      data.current?.currentIncome -
-                      data.current?.currentOut
-                  )}
-                  <sup
-                    className={
-                      "text-4xl " +
-                      (growth > 0 ? "text-accent" : "text-red-500")
-                    }
-                  >
-                    {growth}%
-                  </sup>
-                </div>
-              ) : (
-                ""
-              )}
+              <Current data={data} growth={growth} />
             </CardBody>
             <CardBody>
               <table>
-                <tr>
-                  <td>Einkommen Gesamt:</td>
-                  <td className="text-accent pl-3">
-                    {formatToEUR(
-                      data.all?.reduce((a, b) => a + b.currentIncome, 0) +
-                        data.current?.currentIncome
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Einkommen letzten 12 Monate:</td>
-                  <td className="text-accent pl-3">
-                    {formatToEUR(data.income?.reduce((a, b) => a + b, 0))}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Einkommen diesen Monat:</td>
-                  <td className="text-accent pl-3">
-                    {formatToEUR(data.current?.currentIncome)}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td>Einkommen Gesamt:</td>
+                    <td className="text-accent pl-3">
+                      {formatToEUR(
+                        data.all?.reduce((a, b) => a + b.currentIncome, 0) +
+                          data.current?.currentIncome
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Einkommen letzten 12 Monate:</td>
+                    <td className="text-accent pl-3">
+                      {formatToEUR(data.income?.reduce((a, b) => a + b, 0))}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Einkommen diesen Monat:</td>
+                    <td className="text-accent pl-3">
+                      {formatToEUR(data.current?.currentIncome)}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </CardBody>
             <CardBody>
               <table>
-                <tr>
-                  <td>Ausgaben Gesamt:</td>
-                  <td className="text-red-500 pl-3">
-                    {formatToEUR(
-                      data.all?.reduce((a, b) => a + b.currentOut, 0) +
-                        data.current?.currentOut
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Ausgaben letzten 12 Monate:</td>
-                  <td className="text-red-500 pl-3">
-                    {formatToEUR(data.out?.reduce((a, b) => a + b, 0))}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Ausgaben diesen Monat:</td>
-                  <td className="text-red-500 pl-3">
-                    {formatToEUR(data.current?.currentOut)}
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td>Ausgaben Gesamt:</td>
+                    <td className="text-red-500 pl-3">
+                      {formatToEUR(
+                        data.all?.reduce((a, b) => a + b.currentOut, 0) +
+                          data.current?.currentOut
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Ausgaben letzten 12 Monate:</td>
+                    <td className="text-red-500 pl-3">
+                      {formatToEUR(data.out?.reduce((a, b) => a + b, 0))}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Ausgaben diesen Monat:</td>
+                    <td className="text-red-500 pl-3">
+                      {formatToEUR(data.current?.currentOut)}
+                    </td>
+                  </tr>
+                </tbody>
               </table>
-              <Link className="float-right text-blue-600 hover:underline">
+              <Link
+                to="/transactions"
+                className="float-right text-blue-600 hover:underline"
+              >
                 Transaktionsverlauf
               </Link>
             </CardBody>

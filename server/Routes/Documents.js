@@ -29,19 +29,23 @@ Route.get("/get", authenticateToken, async (req, res) => {
       }
     }
     let newDocuments = [];
-    for (let Document of allDocuments) {
-      const rolesUsed = [];
-      for (let role of req.user.roles) {
-        if (!rolesUsed.includes(role)) {
-          if (Document.roles.includes(role)) newDocuments.push(Document);
-          rolesUsed.push(role);
+    if (req.user.admin) {
+      newDocuments = allDocuments;
+    } else {
+      for (let Document of allDocuments) {
+        const rolesUsed = [];
+        for (let role of req.user.roles) {
+          if (!rolesUsed.includes(role)) {
+            if (Document.roles.includes(role)) newDocuments.push(Document);
+            rolesUsed.push(role);
+          }
         }
+        if (
+          Document.owner._id === req.user._id &&
+          !newDocuments.includes(Document)
+        )
+          newDocuments.push(Document);
       }
-      if (
-        Document.owner._id === req.user._id &&
-        !newDocuments.includes(Document)
-      )
-        newDocuments.push(Document);
     }
     res.json({ folders: allFolders, documents: newDocuments, code: 0 });
   } catch (err) {

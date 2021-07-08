@@ -98,7 +98,6 @@ export async function checktokens() {
 
 export async function fetcher(path, method, body = {}, headers = {}) {
   let result = await apicall(path, method, body, headers);
-  // console.log(result);
   if (result.code === 0) {
     return result;
   } else {

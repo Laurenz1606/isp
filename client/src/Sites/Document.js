@@ -89,7 +89,7 @@ export default function Document() {
     };
   }, [socket, quill]);
 
-  useEffect(() => {
+    useEffect(() => {
     if (socket == null || quill == null) return;
 
     const handler = (delta, oldDelta, source) => {

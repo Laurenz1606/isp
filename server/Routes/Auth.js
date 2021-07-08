@@ -75,25 +75,34 @@ Route.post("/login", async (req, res) => {
 
   try {
     if (user.length === 1) {
-      if (await bcrypt.compare(password, user[0].hashedPassword)) {
-        user = user[0];
-        user = { name: user.name, roles: user.roles, _id: user._id };
+      if (user[0].active) {
+        if (await bcrypt.compare(password, user[0].hashedPassword)) {
+          user = user[0];
+          user = {
+            name: user.name,
+            roles: user.roles,
+            _id: user._id,
+            admin: user.admin,
+          };
 
-        //sign the json web token
-        const accessToken = generateAccessToken(user);
+          //sign the json web token
+          const accessToken = generateAccessToken(user);
 
-        //sign an refresh token to refresh an expired jwt token and add it do our "database" here our array
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-        refreshTokens.push(refreshToken);
+          //sign an refresh token to refresh an expired jwt token and add it do our "database" here our array
+          const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+          refreshTokens.push(refreshToken);
 
-        //send the tokens to the user
-        res.status(200).json({
-          code: 0,
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        });
+          //send the tokens to the user
+          res.status(200).json({
+            code: 0,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          });
+        } else {
+          res.status(403).json({ code: 1 });
+        }
       } else {
-        res.status(403).json({ code: 1 });
+        res.status(403).json({ code: 10 });
       }
     } else {
       res.status(404).json({ code: 2 });
@@ -114,7 +123,7 @@ Route.post("/register", async (req, res) => {
           name: req.body.username,
           email: req.body.email,
           hashedPassword: hashedPassword,
-          admin: req.body.admin
+          admin: req.body.admin,
         });
         await user.save();
         res.status(201).json({ code: 6 });
