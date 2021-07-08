@@ -15,6 +15,24 @@ export function dateFormat(date) {
   )}`;
 }
 
+export function fillArrayWithZero(arr, length) {
+  let newArray = [];
+  for (let index = 0; index < length - arr.length; index++) {
+    newArray.push(0);
+  }
+  return [...arr, ...newArray];
+}
+
+export function formatToEUR(number) {
+  let str = new Intl.NumberFormat("de-DE", {
+    style: "currency",
+    currency: "EUR",
+  })
+    .format(number)
+    .replace(/\u00A0/g, "");
+  return str;
+}
+
 export function StringToArray(string, splitstring) {
   return string.split(splitstring).filter(str => str !== "")
 } 

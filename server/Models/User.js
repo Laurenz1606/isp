@@ -9,6 +9,16 @@ const userSchema = new Schema({
     required: true,
     default: v4(),
   },
+  admin: {
+    type: Boolean,
+    require: true,
+    default: false,
+  },
+  active: {
+    type: Boolean,
+    require: true,
+    default: true,
+  },
   email: {
     type: String,
     required: true,
@@ -34,7 +44,13 @@ const userSchema = new Schema({
         currentIncome: 0,
         currentOut: 0,
       },
-      prevMonths: [],
+      prevMonths: [
+        {
+          prevMonth: 0,
+          currentIncome: 0,
+          currentOut: 0,
+        },
+      ],
     },
   },
 });

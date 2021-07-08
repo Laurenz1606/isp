@@ -1,3 +1,4 @@
+import jwt_decode from "jwt-decode";
 const APIURL = "https://isp-server.mk-return.de";
 const AUTHURL = APIURL + "/auth";
 
@@ -52,6 +53,10 @@ export async function login(username, password, redirect) {
   }
 }
 
+export async function decodeToken(){
+  return await jwt_decode(getTokenFromLocalstorage("accessToken"))
+}
+
 export async function checktokensAndRefresh() {
   const response = await fetch(AUTHURL + "/check", {
     method: "POST",
@@ -93,7 +98,6 @@ export async function checktokens() {
 
 export async function fetcher(path, method, body = {}, headers = {}) {
   let result = await apicall(path, method, body, headers);
-  // console.log(result);
   if (result.code === 0) {
     return result;
   } else {

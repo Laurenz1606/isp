@@ -31,7 +31,10 @@ export default function Login() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              login(username, password, redirectTo);
+              const x = async () => {
+                console.log(await login(username, password, redirectTo));
+              };
+              x()
             }}
             className="mt-4"
           >
