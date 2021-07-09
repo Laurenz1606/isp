@@ -28,7 +28,7 @@ export default function Login() {
         <div style={{ maxWidth: "90vw" }} className="space-y-8">
           <div
             className={
-              "bg-red-400 p-3 rounded-2xl top-1/5 text-white flex flex-grow-0 flex-shrink-0 text-lg space-x-4 items-center pr-6 md:max-w-2xl " +
+              "bg-red-400 p-3 rounded-2xl top-1/5 text-white flex flex-grow-0 flex-shrink-0  text-lg space-x-4 items-center pr-6 md:max-w-2xl " +
               ((errorCode === 1) |
               (errorCode === 2) |
               (errorCode === 3) |
