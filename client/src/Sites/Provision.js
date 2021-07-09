@@ -17,6 +17,7 @@ export default function Provision() {
   const [chartState, setChartState] = useState(0);
   const [name, setName] = useState("");
   const [growth, setGrowth] = useState(0);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     document.title = document.config.title.replace("[SITE]", "Provision");
@@ -114,170 +115,297 @@ export default function Provision() {
               style={{ maxWidth: "100%", margin: "auto" }}
             >
               {chartState === 0 ? (
-                <Line
-                  style={{ maxHeight: "50vh" }}
-                  data={{
-                    labels: getLast12Months(),
-                    datasets: [
-                      {
-                        label: "Einkommen pro Monat in €",
-                        fill: true,
-                        data: data.income,
-                        backgroundColor: "rgba(0, 218, 0, 0.1)",
-                        pointBackgroundColor: "rgba(0, 218, 0, 0)",
-                        borderColor: "rgba(0, 218, 0, 1)",
-                        borderWidth: 3,
-                      },
-                      // {
-                      //   label: "Durchschnittliches Einkommen",
-                      //   fill: false,
-                      //   data: data.income?.map(() =>
-                      //     parseFloat(
-                      //       (
-                      //         data.income?.reduce((a, b) => a + b, 0) /
-                      //         data.income?.length
-                      //       ).toFixed(2)
-                      //     )
-                      //   ),
-                      //   backgroundColor: "rgba(0, 0, 0, 0.1)",
-                      //   pointBackgroundColor: "rgba(0, 0, 0, 0)",
-                      //   borderColor: "rgba(0, 0, 0, 1)",
-                      //   borderWidth: 3,
-                      //   pointRadius: 0,
-                      // },
-                    ],
-                  }}
-                  options={{
-                    legend: false,
-                    responsive: true,
-                    scales: {
-                      yAxes: [
+                checked ? (
+                  <Line
+                    style={{ maxHeight: "50vh" }}
+                    data={{
+                      labels: getLast12Months(),
+                      datasets: [
                         {
-                          ticks: {
-                            beginAtZero: true,
-                            min: 0,
-                          },
+                          label: "Einkommen pro Monat in €",
+                          fill: true,
+                          data: data.income,
+                          backgroundColor: "rgba(0, 218, 0, 0.1)",
+                          pointBackgroundColor: "rgba(0, 218, 0, 0)",
+                          borderColor: "rgba(0, 218, 0, 1)",
+                          borderWidth: 3,
+                        },
+                        {
+                          label: "Durchschnittliches Einkommen",
+                          fill: false,
+                          data: data.income?.map(() =>
+                            parseFloat(
+                              (
+                                data.income?.reduce((a, b) => a + b, 0) /
+                                data.income?.length
+                              ).toFixed(2)
+                            )
+                          ),
+                          backgroundColor: "rgba(0, 0, 0, 0.1)",
+                          pointBackgroundColor: "rgba(0, 0, 0, 0)",
+                          borderColor: "rgba(0, 0, 0, 1)",
+                          borderWidth: 3,
+                          pointRadius: 0,
                         },
                       ],
-                    },
-                    interaction: {
-                      intersect: false,
-                      mode: "index",
-                    },
-                  }}
-                />
+                    }}
+                    options={{
+                      legend: false,
+                      responsive: true,
+                      scales: {
+                        yAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              min: 0,
+                            },
+                          },
+                        ],
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: "index",
+                      },
+                    }}
+                  />
+                ) : (
+                  <Line
+                    style={{ maxHeight: "50vh" }}
+                    data={{
+                      labels: getLast12Months(),
+                      datasets: [
+                        {
+                          label: "Einkommen pro Monat in €",
+                          fill: true,
+                          data: data.income,
+                          backgroundColor: "rgba(0, 218, 0, 0.1)",
+                          pointBackgroundColor: "rgba(0, 218, 0, 0)",
+                          borderColor: "rgba(0, 218, 0, 1)",
+                          borderWidth: 3,
+                        },
+                      ],
+                    }}
+                    options={{
+                      legend: false,
+                      responsive: true,
+                      scales: {
+                        yAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              min: 0,
+                            },
+                          },
+                        ],
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: "index",
+                      },
+                    }}
+                  />
+                )
               ) : chartState === 1 ? (
-                <Line
-                  style={{ maxHeight: "50vh" }}
-                  data={{
-                    labels: getLast12Months(),
-                    datasets: [
-                      {
-                        label: "Ausgaben pro Monat in €",
-                        fill: true,
-                        data: data.out,
-                        backgroundColor: "rgba(255, 0, 0, 0.1)",
-                        pointBackgroundColor: "rgba(255, 0, 0, 1)",
-                        borderColor: "rgba(255, 0, 0, 1)",
-                        borderWidth: 3,
-                      },
-                      // {
-                      //   label: "Durchschnittliche Ausgaben",
-                      //   fill: false,
-                      //   data: data.out?.map(() =>
-                      //     parseFloat(
-                      //       (
-                      //         data.out?.reduce((a, b) => a + b, 0) /
-                      //         data.out?.length
-                      //       ).toFixed(2)
-                      //     )
-                      //   ),
-                      //   backgroundColor: "rgba(0, 0, 0, 0.1)",
-                      //   pointBackgroundColor: "rgba(0, 0, 0, 0)",
-                      //   borderColor: "rgba(0, 0, 0, 1)",
-                      //   borderWidth: 3,
-                      //   pointRadius: 0,
-                      // },
-                    ],
-                  }}
-                  options={{
-                    legend: false,
-                    responsive: true,
-                    scales: {
-                      yAxes: [
+                checked ? (
+                  <Line
+                    style={{ maxHeight: "50vh" }}
+                    data={{
+                      labels: getLast12Months(),
+                      datasets: [
                         {
-                          ticks: {
-                            beginAtZero: true,
-                            min: 0,
-                          },
+                          label: "Ausgaben pro Monat in €",
+                          fill: true,
+                          data: data.out,
+                          backgroundColor: "rgba(255, 0, 0, 0.1)",
+                          pointBackgroundColor: "rgba(255, 0, 0, 1)",
+                          borderColor: "rgba(255, 0, 0, 1)",
+                          borderWidth: 3,
+                        },
+                        {
+                          label: "Durchschnittliche Ausgaben",
+                          fill: false,
+                          data: data.out?.map(() =>
+                            parseFloat(
+                              (
+                                data.out?.reduce((a, b) => a + b, 0) /
+                                data.out?.length
+                              ).toFixed(2)
+                            )
+                          ),
+                          backgroundColor: "rgba(0, 0, 0, 0.1)",
+                          pointBackgroundColor: "rgba(0, 0, 0, 0)",
+                          borderColor: "rgba(0, 0, 0, 1)",
+                          borderWidth: 3,
+                          pointRadius: 0,
                         },
                       ],
-                    },
-                    interaction: {
-                      intersect: false,
-                      mode: "index",
-                    },
-                  }}
-                />
+                    }}
+                    options={{
+                      legend: false,
+                      responsive: true,
+                      scales: {
+                        yAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              min: 0,
+                            },
+                          },
+                        ],
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: "index",
+                      },
+                    }}
+                  />
+                ) : (
+                  <Line
+                    style={{ maxHeight: "50vh" }}
+                    data={{
+                      labels: getLast12Months(),
+                      datasets: [
+                        {
+                          label: "Ausgaben pro Monat in €",
+                          fill: true,
+                          data: data.out,
+                          backgroundColor: "rgba(255, 0, 0, 0.1)",
+                          pointBackgroundColor: "rgba(255, 0, 0, 1)",
+                          borderColor: "rgba(255, 0, 0, 1)",
+                          borderWidth: 3,
+                        },
+                      ],
+                    }}
+                    options={{
+                      legend: false,
+                      responsive: true,
+                      scales: {
+                        yAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              min: 0,
+                            },
+                          },
+                        ],
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: "index",
+                      },
+                    }}
+                  />
+                )
               ) : chartState === 2 ? (
-                <Line
-                  style={{ maxHeight: "50vh" }}
-                  data={{
-                    labels: getLast12Months(),
-                    datasets: [
-                      {
-                        label: "Gesamtprovision pro Monat in €",
-                        fill: true,
-                        data: data.total,
-                        backgroundColor: "rgba(0, 0, 255, 0.1)",
-                        pointBackgroundColor: "rgba(0, 0, 255, 1)",
-                        borderColor: "rgba(0, 0, 255, 1)",
-                        borderWidth: 3,
-                      },
-                      // {
-                      //   label: "Durchschnittliche Gesamtprovision",
-                      //   fill: false,
-                      //   data: data.total?.map(() =>
-                      //     parseFloat(
-                      //       (
-                      //         data.total?.reduce((a, b) => a + b, 0) /
-                      //         data.total?.length
-                      //       ).toFixed(2)
-                      //     )
-                      //   ),
-                      //   backgroundColor: "rgba(0, 0, 0, 0.1)",
-                      //   pointBackgroundColor: "rgba(0, 0, 0, 0)",
-                      //   borderColor: "rgba(0, 0, 0, 1)",
-                      //   borderWidth: 3,
-                      //   pointRadius: 0,
-                      // },
-                    ],
-                  }}
-                  options={{
-                    legend: false,
-                    responsive: true,
-                    scales: {
-                      yAxes: [
+                checked ? (
+                  <Line
+                    style={{ maxHeight: "50vh" }}
+                    data={{
+                      labels: getLast12Months(),
+                      datasets: [
                         {
-                          ticks: {
-                            beginAtZero: true,
-                            min: 0,
-                          },
+                          label: "Gesamtprovision pro Monat in €",
+                          fill: true,
+                          data: data.total,
+                          backgroundColor: "rgba(0, 0, 255, 0.1)",
+                          pointBackgroundColor: "rgba(0, 0, 255, 1)",
+                          borderColor: "rgba(0, 0, 255, 1)",
+                          borderWidth: 3,
+                        },
+                        {
+                          label: "Durchschnittliche Gesamtprovision",
+                          fill: false,
+                          data: data.total?.map(() =>
+                            parseFloat(
+                              (
+                                data.total?.reduce((a, b) => a + b, 0) /
+                                data.total?.length
+                              ).toFixed(2)
+                            )
+                          ),
+                          backgroundColor: "rgba(0, 0, 0, 0.1)",
+                          pointBackgroundColor: "rgba(0, 0, 0, 0)",
+                          borderColor: "rgba(0, 0, 0, 1)",
+                          borderWidth: 3,
+                          pointRadius: 0,
                         },
                       ],
-                    },
-                    interaction: {
-                      intersect: false,
-                      mode: "index",
-                    },
-                  }}
-                />
+                    }}
+                    options={{
+                      legend: false,
+                      responsive: true,
+                      scales: {
+                        yAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              min: 0,
+                            },
+                          },
+                        ],
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: "index",
+                      },
+                    }}
+                  />
+                ) : (
+                  <Line
+                    style={{ maxHeight: "50vh" }}
+                    data={{
+                      labels: getLast12Months(),
+                      datasets: [
+                        {
+                          label: "Gesamtprovision pro Monat in €",
+                          fill: true,
+                          data: data.total,
+                          backgroundColor: "rgba(0, 0, 255, 0.1)",
+                          pointBackgroundColor: "rgba(0, 0, 255, 1)",
+                          borderColor: "rgba(0, 0, 255, 1)",
+                          borderWidth: 3,
+                        },
+                      ],
+                    }}
+                    options={{
+                      legend: false,
+                      responsive: true,
+                      scales: {
+                        yAxes: [
+                          {
+                            ticks: {
+                              beginAtZero: true,
+                              min: 0,
+                            },
+                          },
+                        ],
+                      },
+                      interaction: {
+                        intersect: false,
+                        mode: "index",
+                      },
+                    }}
+                  />
+                )
               ) : chartState > 2 ? (
                 setChartState(0)
               ) : (
                 setChartState(2)
               )}
             </div>
+          </CardBody>
+          <CardBody>
+            <label className="container-check">
+              Durchschnitt anzeigen
+              <input
+                type="checkbox"
+                name="Durchschnitt anzeigen?"
+                value={checked}
+                checked={checked}
+                onChange={() => setChecked(!checked)}
+              />
+              <span className="checkmark" />
+            </label>
           </CardBody>
         </SplitCard>
         <SmallCard header="Ranking"></SmallCard>
