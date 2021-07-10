@@ -9,6 +9,8 @@ import Provision from "./Sites/Provision";
 import Document from "./Sites/Document";
 import Documents from "./Sites/Documents";
 import Mails from "./Sites/Mails";
+import ManageServer from "./Sites/ManageServer";
+import AdminProtect from "./Components/AdminProtect";
 
 function Start() {
   useEffect(() => {
@@ -66,6 +68,24 @@ export default function Router() {
           <Route path="/documents">
             <SidebarManager>
               <Documents />
+            </SidebarManager>
+          </Route>
+
+          {/* manage-server */}
+          <Route path="/manage-server">
+            <SidebarManager>
+              <AdminProtect>
+                <ManageServer />
+              </AdminProtect>
+            </SidebarManager>
+          </Route>
+
+          {/* admincontrolpanel */}
+          <Route path="/acp">
+            <SidebarManager>
+              <AdminProtect>
+                <p>ACP</p>
+              </AdminProtect>
             </SidebarManager>
           </Route>
 

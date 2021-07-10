@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   AdjustmentsIcon,
@@ -10,27 +10,40 @@ import {
   DatabaseIcon,
   DocumentTextIcon,
   HomeIcon,
+  KeyIcon,
   LogoutIcon,
   MailIcon,
   MenuIcon,
+  ServerIcon,
   XIcon,
 } from "@heroicons/react/outline";
 import SidebarItem from "./SidebarItem";
-import { logout } from "../../Functions/AuthFunctions";
+import { decodeToken, logout } from "../../Functions/AuthFunctions";
 
 export default function Sidebar({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation().pathname;
 
   function toggleNavbar() {
     setSidebarOpen(!sidebarOpen);
   }
 
+  useEffect(() => {
+    const x = async () => setIsAdmin((await decodeToken()).admin);
+    x()
+  }, []);
+
   function checkIfdocuments() {
-    if (location.match(/^\/documents\/\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g) === null) return false;
-    return true
+    if (
+      location.match(
+        /^\/documents\/\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g
+      ) === null
+    )
+      return false;
+    return true;
   }
-  console.log()
+  console.log();
 
   return (
     <div className="relative min-h-screen md:flex">
@@ -116,6 +129,22 @@ export default function Sidebar({ children }) {
           />
           <SidebarItem
             action={toggleNavbar}
+            to="/manage-server"
+            text="Server Überwachung"
+            icon={<ServerIcon className="h-6 w-6" />}
+          />
+          {isAdmin ? (
+            <SidebarItem
+              action={toggleNavbar}
+              to="/acp"
+              text="Admincontrolpanel"
+              icon={<KeyIcon className="h-6 w-6" />}
+            />
+          ) : (
+            ""
+          )}
+          <SidebarItem
+            action={toggleNavbar}
             to="/settings"
             text="Einstellungen"
             icon={<CogIcon className="h-6 w-6" />}
@@ -129,7 +158,12 @@ export default function Sidebar({ children }) {
           </button>
         </nav>
       </div>
-      <div className={"flex-1 md:ml-64 " + (checkIfdocuments() === true ? "flex justify-center" : "p-2 md:p-10")}>
+      <div
+        className={
+          "flex-1 md:ml-64 " +
+          (checkIfdocuments() === true ? "flex justify-center" : "p-2 md:p-10")
+        }
+      >
         {children}
       </div>
     </div>

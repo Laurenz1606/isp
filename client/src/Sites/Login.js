@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { checktokensAndRefresh, login } from "../Functions/AuthFunctions";
+import Footer from "../Components/Login/Fotter";
 import { useQuery } from "../Functions/ReactRouterDomHooks";
 import { Link } from "react-router-dom";
 import { ExclamationIcon, LoginIcon } from "@heroicons/react/outline";
@@ -38,7 +39,7 @@ export default function Login() {
             }
           >
             <ExclamationIcon className="h-16 w-16" />
-            <div className="flex items-center">
+            <div className="flex items-center select-none">
               {(errorCode === 1) | (errorCode === 2)
                 ? "Der Benutzername oder das Kennwort ist falsch oder der Account existiert nicht."
                 : errorCode === 3
@@ -94,7 +95,7 @@ export default function Login() {
                 />
               </div>
               <div className="my-2">
-                Passwort vergessen?{" "}
+                Passwort vergessen?
                 <Link className="text-blue-600 hover:underline">
                   Hier Klicken
                 </Link>
@@ -102,7 +103,7 @@ export default function Login() {
               <div className="flex justify-end mt-2">
                 <button
                   type="submit"
-                  className="bg-accent  flex px-5 justify-center items-center rounded-lg text-white font-semibold text-lg py-2 space-x-2 text-center hover:shadow-md"
+                  className="bg-accent flex px-5 justify-center items-center rounded-lg text-white font-semibold text-lg py-2 space-x-2 text-center hover:shadow-md"
                 >
                   <LoginIcon className="w-6 rotate-180 transform h-6" />
                   <div>Anmelden</div>
@@ -111,9 +112,7 @@ export default function Login() {
             </form>
           </div>
         </div>
-        <div className="z-20 absolute bottom-0 inset-x-0 bg-white flex items-center justify-center p-2 text-lg font-semibold">
-          <a href="https://mk-return.de">©2021 mk:return</a>
-        </div>
+        <Footer />
       </div>
     </>
   );

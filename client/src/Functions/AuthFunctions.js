@@ -53,8 +53,16 @@ export async function login(username, password, redirect) {
   }
 }
 
-export async function decodeToken(){
-  return await jwt_decode(getTokenFromLocalstorage("accessToken"))
+export async function decodeToken() {
+  try {
+    return await jwt_decode(
+      getTokenFromLocalstorage("accessToken") !== ""
+        ? getTokenFromLocalstorage("accessToken")
+        : null
+    );
+  } catch (err) {
+    return { name: "", admin: false };
+  }
 }
 
 export async function checktokensAndRefresh() {

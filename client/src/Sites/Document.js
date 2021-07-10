@@ -79,8 +79,7 @@ export default function Document() {
 		const handler = (delta) => {
 			quill.updateContents(delta);
 		};
-		socket.on('document/recive', handler);
-
+		socket.on('document/recive', handler); 
 		return () => {
 			socket.off('document/recive', handler);
 		};

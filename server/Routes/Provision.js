@@ -1,5 +1,5 @@
 const express = require("express");
-const schedule = require('node-schedule');
+const schedule = require("node-schedule");
 const authenticateToken = require("./VerifyToken");
 const User = require("../Models/User");
 const Route = express.Router();
@@ -43,7 +43,9 @@ function newMonth(provision, newIn, newOut) {
 }
 
 function getMonthValue(month) {
-  return parseFloat((month.prevMonth + month.currentIncome - month.currentOut).toFixed(2));
+  return parseFloat(
+    (month.prevMonth + month.currentIncome - month.currentOut).toFixed(2)
+  );
 }
 
 module.exports = Route;

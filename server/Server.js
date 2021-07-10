@@ -20,6 +20,7 @@ const provisionRouter = require("./Routes/Provision");
 
 //socket routes
 const documentsSocket = require("./Socket.io/Documents");
+const serverSocket = require("./Socket.io/ManageServer");
 
 //mongoose config
 mongoose.connect(
@@ -63,5 +64,6 @@ app.listen(process.env.PORT || 4000, () =>
 console.log("Socket.IO on Port: " + process.env.SOCKETPORT || 5000);
 
 io.on("connection", (socket) => {
-  documentsSocket(socket);
+  documentsSocket(socket, io);
 });
+serverSocket(io);
