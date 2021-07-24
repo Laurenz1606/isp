@@ -9,6 +9,10 @@ Route.get("/getAll", authenticateToken, async (req, res) => {
   res.json({ provision: user.provision, code: 0 });
 });
 
+Route.post("/newTransaction", authenticateToken, () => {
+
+})
+
 const map = (val, in_min, in_max, out_min, out_max) =>
   ((val - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 

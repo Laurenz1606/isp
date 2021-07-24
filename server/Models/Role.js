@@ -11,11 +11,15 @@ const Role = new Schema({
     type: String,
     required: true,
   },
-  perms: {
+  calender: {
     type: Object,
     required: true,
   },
+  users: {
+    type: Array,
+    required: true,
+  }
 });
 
 //export the module
-module.exports = mongoose.model("role", Role);
+module.exports = model("role", Role);

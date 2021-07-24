@@ -16,7 +16,11 @@ const Document = new Schema({
     type: Number,
   },
   roles: [String],
-  owner: Object
+  owner: Object, 
+  public: {
+    type: Boolean, 
+    default: false
+  },
 });
 
 module.exports = model("Document", Document);

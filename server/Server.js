@@ -7,6 +7,7 @@ if (process.env.NODE_ENV !== "production") {
 const mongoose = require("mongoose");
 const { v4 } = require("uuid");
 const Folder = require("./Models/DocumentFolder");
+const Role = require("./Models/Role");
 const express = require("express");
 const cors = require("cors");
 const io = require("socket.io")(process.env.SOCKETPORT || 5000, {
@@ -17,6 +18,7 @@ const io = require("socket.io")(process.env.SOCKETPORT || 5000, {
 const authRouter = require("./Routes/Auth");
 const documentsRouter = require("./Routes/Documents");
 const provisionRouter = require("./Routes/Provision");
+const rolesRouter = require("./Routes/Roles");
 
 //socket routes
 const documentsSocket = require("./Socket.io/Documents");
@@ -28,13 +30,13 @@ mongoose.connect(
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
   },
   () => console.log("Connected to Database: " + process.env.DATABASE_URL)
 );
 
 (async () => {
-  let folder = await Folder.find({ path: "/" })
+  let folder = await Folder.find({ path: "/" });
   if (folder.length < 1) {
     Folder.create({
       _id: v4(),
@@ -43,7 +45,7 @@ mongoose.connect(
       name: "",
       owner: "",
       path: "/",
-    })
+    });
   }
 })();
 
@@ -56,6 +58,7 @@ app.use(cors());
 app.use("/auth", authRouter);
 app.use("/documents", documentsRouter);
 app.use("/provision", provisionRouter);
+app.use("/roles", rolesRouter);
 app.listen(process.env.PORT || 4000, () =>
   console.log("Express on Port: " + process.env.PORT || 4000)
 );

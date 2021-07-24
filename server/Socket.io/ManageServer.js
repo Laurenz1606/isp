@@ -33,7 +33,6 @@ module.exports = (io) => {
   io.on("connection", (socket) => {
     socket.on("server/get", async () => {
       socket.join("data");
-      console.log(getUserRooms(io))
       socket.emit("server/data", {
         memory: {
           free: os.freemem(),
@@ -48,9 +47,3 @@ module.exports = (io) => {
     });
   });
 };
-
-
-function getUserRooms(io) {
-  return io.sockets.adapter.rooms.get('data');
-
-}

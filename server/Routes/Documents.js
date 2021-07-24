@@ -7,8 +7,10 @@ const authenticateToken = require("./VerifyToken");
 //mongodb models
 const Folder = require("../Models/DocumentFolder");
 const Document = require("../Models/Document");
+const Roles = require("../Models/Role");
 const DocumentFolder = require("../Models/DocumentFolder");
 const DocumentPreset = require("../Models/DocumentPreset");
+const Role = require("../Models/Role");
 
 //express config
 const Route = express.Router();
@@ -33,21 +35,44 @@ Route.get("/get", authenticateToken, async (req, res) => {
       newDocuments = allDocuments;
     } else {
       for (let Document of allDocuments) {
-        const rolesUsed = [];
-        for (let role of req.user.roles) {
-          if (!rolesUsed.includes(role)) {
-            if (Document.roles.includes(role)) newDocuments.push(Document);
-            rolesUsed.push(role);
+        if (Document) {
+          const rolesUsed = [];
+          if (Document.public === true) {
+            newDocuments.push(Document);
+          } else {
+            for (let role of req.user.roles) {
+              if (!rolesUsed.includes(role)) {
+                if (Document.roles.includes(role)) {
+                  newDocuments.push(Document);
+                }
+                rolesUsed.push(role);
+              }
+            }
+            if (
+              Document.owner._id === req.user._id &&
+              !newDocuments.includes(Document)
+            ) {
+              newDocuments.push(Document);
+            }
           }
         }
-        if (
-          Document.owner._id === req.user._id &&
-          !newDocuments.includes(Document)
-        )
-          newDocuments.push(Document);
       }
     }
-    res.json({ folders: allFolders, documents: newDocuments, code: 0 });
+    let returnDocuments = [];
+    for (let document of newDocuments) {
+      if (document !== undefined) {
+        let newRoles = [];
+        for (let docrole of document.roles) {
+          const role = await Roles.findById(docrole);
+          newRoles.push(role.displayName);
+        }
+        document.roles = newRoles;
+        returnDocuments.push(document);
+      } else {
+        returnDocuments = [];
+      }
+    }
+    res.json({ folders: allFolders, documents: returnDocuments, code: 0 });
   } catch (err) {
     console.log(err);
   }
@@ -67,6 +92,7 @@ Route.post("/getpaths", authenticateToken, async (req, res) => {
 });
 
 Route.post("/addDoc", authenticateToken, async (req, res) => {
+  let filteredRoles = req.body.roles.filter((item) => item !== "public");
   const doc = await new Document({
     _id: v4(),
     name: req.body.name,
@@ -77,7 +103,8 @@ Route.post("/addDoc", authenticateToken, async (req, res) => {
       : {},
     createDate: +new Date(),
     changedDate: +new Date(),
-    roles: req.body.roles,
+    roles: filteredRoles,
+    public: req.body.roles.includes("public"),
     owner: { name: req.user.name, roles: req.user.roles, _id: req.user._id },
   });
   const newDoc = await doc.save();
