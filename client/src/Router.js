@@ -11,6 +11,7 @@ import Documents from "./Sites/Documents";
 import Mails from "./Sites/Mails";
 import ManageServer from "./Sites/ManageServer";
 import AdminProtect from "./Components/AdminProtect";
+import Calendar from "./Sites/Calendar";
 
 function Start() {
   useEffect(() => {
@@ -47,6 +48,13 @@ export default function Router() {
           <Route path="/provision">
             <SidebarManager>
               <Provision />
+            </SidebarManager>
+          </Route>
+
+          {/* calender page */}
+          <Route path="/calendar">
+            <SidebarManager>
+              <Calendar />
             </SidebarManager>
           </Route>
 

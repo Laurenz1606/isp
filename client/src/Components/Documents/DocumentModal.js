@@ -23,13 +23,17 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
 
   const history = useHistory();
   const [error, setError] = useState(false);
-  const [presets, sePresets] = useState(null);
+  const [roles, setRoles] = useState([]);
+  const [presets, sePresets] = useState([]);
   const [preset, setPreset] = useState(null);
+  const [publicState, setPublicState] = useState(false);
   useEffect(() => {
     if (type === "document") {
       async function x() {
         let y = await fetcher("/documents/getPresets", "GET");
         sePresets(y.data);
+        let x = await fetcher("/roles/getAll", "GET");
+        setRoles(x.data);
       }
       x();
     }
@@ -114,19 +118,44 @@ export default function Modal({ isOpen, setIsOpen, type, FolderPath }) {
                   Berechtigungen
                 </Dialog.Title>
                 <div className="space-y-5">
-                  <ModalRoleCheck text="Abteilungsleitung" />
-                  <ModalRoleCheck text="Marketing" />
-                  <ModalRoleCheck text="Logistik" />
-                  <ModalRoleCheck text="Hallo" />
+                  <label className="container-check">
+                    Öffentlich
+                    <input
+                      type="checkbox"
+                      name="public"
+                      value={publicState}
+                      checked={publicState}
+                      onChange={() => setPublicState(!publicState)}
+                    />
+                    <span className="checkmark" />
+                  </label>
+                  {!publicState
+                    ? roles.map((role) => (
+                        <ModalRoleCheck
+                          text={role.displayName}
+                          id={role._id}
+                          key={role._id}
+                        />
+                      ))
+                    : ""}
                 </div>
               </div>
               <div className="p-3 w-screen modal-document pt-0 flex justify-center flex-col">
-                <Dialog.Title className="text-center font-semibold text-lg pb-1">
-                  Vorlagen
-                </Dialog.Title>
-                <div className="space-y-5">
-                  <ModalPresetCheck presets={presets} setPreset={setPreset} />
-                </div>
+                {presets.length !== 0 ? (
+                  <>
+                    <Dialog.Title className="text-center font-semibold text-lg pb-1">
+                      Vorlagen
+                    </Dialog.Title>
+                    <div className="space-y-5">
+                      <ModalPresetCheck
+                        presets={presets}
+                        setPreset={setPreset}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  ""
+                )}
               </div>
             </>
           ) : (

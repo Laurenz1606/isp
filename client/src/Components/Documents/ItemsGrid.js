@@ -9,7 +9,7 @@ export default function ItemsGrid({
   setLoading,
   setFolders,
   editMode,
-  toggle
+  toggle,
 }) {
   return (
     <>
@@ -35,20 +35,24 @@ export default function ItemsGrid({
               })}
           {loading
             ? ""
-            : documents.map((document) => (
-                <DocumentCard
-                  editMode={editMode}
-                  type="document"
-                  key={document._id}
-                  title={document.name}
-                  id={document._id}
-                  changedAt={document.changedDate}
-                  createdAt={document.createDate}
-                  roles={document.roles}
-                  owner={document.owner}
-                  currPath={FolderPath}
-                />
-              ))}
+            : documents.map((document) => {
+                console.log(document);
+                return (
+                  <DocumentCard
+                    editMode={editMode}
+                    type="document"
+                    key={document._id}
+                    title={document.name}
+                    id={document._id}
+                    changedAt={document.changedDate}
+                    createdAt={document.createDate}
+                    publicState={document.public}
+                    roles={document.roles}
+                    owner={document.owner}
+                    currPath={FolderPath}
+                  />
+                );
+              })}
         </div>
       ) : (
         <form
@@ -85,6 +89,7 @@ export default function ItemsGrid({
                   changedAt={document.changedDate}
                   createdAt={document.createDate}
                   roles={document.roles}
+                  publicState={document.public}
                   owner={document.owner}
                   currPath={FolderPath}
                 />

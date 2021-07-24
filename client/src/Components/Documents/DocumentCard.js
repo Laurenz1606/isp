@@ -10,6 +10,7 @@ export default function DocumentCard({
   id,
   changedAt,
   createdAt,
+  publicState,
   roles,
   owner,
   currPath,
@@ -19,9 +20,16 @@ export default function DocumentCard({
   toggle = () => "",
 }) {
   const [checked, setChecked] = useState(false);
-  // eslint-disable-next-line
-  useEffect(() => {toggle(id, type, checked)}, [checked])
-  useEffect(() => {setChecked(false)}, [editMode])
+  useEffect(() => {
+    toggle(id, type, checked);
+    // eslint-disable-next-line
+  }, [checked]);
+  useEffect(() => {
+    setChecked(false);
+  }, [editMode]);
+
+  console.log(publicState);
+
   return (
     <>
       {editMode === 0 ? (
@@ -73,6 +81,7 @@ export default function DocumentCard({
                 {roles.map((role, idx) => (
                   <DocumentRolesTag name={role} key={idx} />
                 ))}
+                {publicState ? <DocumentRolesTag name={"Öffentlich"} /> : ""}
               </div>
             ) : (
               ""
@@ -80,9 +89,22 @@ export default function DocumentCard({
           </div>
         </Link>
       ) : (
-        <div className="cursor-pointer select-none" onClick={() => setChecked(!checked)}>
-          <div className={"break-all bg-white group shadow-lg rounded-lg p-5 group hover:bg-accent" + (!checked ? "" : " bg-accent")}>
-            <div className={"flex group-hover:text-white space-x-1 justify-between" + (!checked ? " text-accent" : " text-white")}>
+        <div
+          className="cursor-pointer select-none"
+          onClick={() => setChecked(!checked)}
+        >
+          <div
+            className={
+              "break-all bg-white group shadow-lg rounded-lg p-5 group hover:bg-accent" +
+              (!checked ? "" : " bg-accent")
+            }
+          >
+            <div
+              className={
+                "flex group-hover:text-white space-x-1 justify-between" +
+                (!checked ? " text-accent" : " text-white")
+              }
+            >
               <div className="flex items-start flex-row">
                 <div>
                   {type === "document" ? (
@@ -104,7 +126,12 @@ export default function DocumentCard({
                 onChange={() => setChecked(!checked)}
               />
             </div>
-            <div className={"text-sm text-left text-gray-500 group-hover:text-gray-800" + (!checked ? "" : " text-gray-800")}>
+            <div
+              className={
+                "text-sm text-left text-gray-500 group-hover:text-gray-800" +
+                (!checked ? "" : " text-gray-800")
+              }
+            >
               {type === "document" ? (
                 <>
                   <span>Geändert: {dateFormat(changedAt)}</span>
@@ -122,6 +149,11 @@ export default function DocumentCard({
                 {roles.map((role, idx) => (
                   <DocumentRolesTag checked={checked} name={role} key={idx} />
                 ))}
+                {publicState ? (
+                  <DocumentRolesTag name={"Öffentlich"} checked={checked} />
+                ) : (
+                  ""
+                )}
               </div>
             ) : (
               ""

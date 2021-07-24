@@ -2,11 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-button, a, input {
+button,
+a,
+input {
   @apply focus:outline-none;
 }
 
-button, a {
+button,
+a {
   cursor: pointer;
 }
 
@@ -14,6 +17,23 @@ button, a {
   cursor: pointer;
 }
 
-.login::placeholder {
-  /* @apply */
+.fc-toolbar {
+  @apply lg:flex-row flex-col space-y-2 lg:space-y-0;
+}
+
+.fc .fc-button-primary:focus {
+  box-shadow: none !important;
+}
+
+.fc .fc-button-primary:not(:disabled):active:focus, .fc .fc-button-primary:not(:disabled).fc-button-active:focus {
+  box-shadow: none !important;
+}
+
+:root {
+  --fc-button-active-border-color: #04a376;
+  --fc-button-active-bg-color: #04a376;
+  --fc-button-border-color: #11b789;
+  --fc-button-bg-color: #11b789;
+  --fc-button-hover-border-color: #29cc9e;
+  --fc-button-hover-bg-color: #29cc9e;
 }
